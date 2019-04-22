@@ -1,0 +1,28 @@
+{
+  "name": "feast",
+  "reason": {
+    "react-jsx": 3
+  },
+  "bsc-flags": ["-open Belt", "-bs-g"],
+  "sources": [{
+    "dir" : "src",
+    "subdirs" : true
+  }],
+  "ppx-flags": [
+    "let-anything-bin/let_anything.native"
+  ],
+  "warnings": {
+    "number": "-44-27-45"
+  },
+  "package-specs": [{
+    "module": "commonjs",
+    "in-source": true
+  }],
+  "suffix": ".bs.js",
+  "namespace": false,
+  "bs-dependencies": [
+    "reason-react",
+    "bs-css"
+  ],
+  "refmt": 3
+}

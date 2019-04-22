@@ -1,0 +1,22 @@
+{
+  "$schemaVersion": 2,
+  "version": 1,
+  "engines": {
+    "Js.Json": {
+      "output": "src/TypeSerde.re"
+    }
+  },
+  "entries": [
+    {
+      "file": "src/Types.re",
+      "type": "Annotation.t",
+      "publicName": "annotation"
+    },
+    {
+      "file": "src/Types.re",
+      "type": "Tag.t",
+      "publicName": "tag"
+    }
+  ],
+  "custom": []
+}
