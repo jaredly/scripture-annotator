@@ -39,3 +39,31 @@ let nav: Js.Promise.t(nav) = {
   let%Lets.Async response = Web.fetch("/data/meta.json", Js.Obj.empty());
   response->Web.json;
 };
+
+type content = {
+  .
+  "id": string,
+  "title": string,
+  "uri": string,
+  "content": string,
+  "related":
+    Js.Dict.t({
+      .
+      "content_html": string,
+      "subitem_id": string,
+      "label_html": string,
+      "ref_id": string,
+      "origin_id": string,
+      "word_offset": int,
+      "id": int,
+    }),
+};
+
+let content = (volid, subid): Js.Promise.t(content) => {
+  let%Lets.Async response =
+    Web.fetch(
+      "/data/output/" ++ volid ++ "/" ++ subid ++ ".json",
+      Js.Obj.empty(),
+    );
+  response->Web.json;
+};
