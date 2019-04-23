@@ -2,6 +2,7 @@ type reference = {
   uri: string,
   start: (string, int),
   stop: (string, int),
+  text: string,
 };
 
 let newId = () =>

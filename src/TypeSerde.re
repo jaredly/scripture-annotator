@@ -5,6 +5,7 @@ module Types1 = {
       uri: string,
       start: (string, int),
       stop: (string, int),
+      text: string,
     }
   and _Types__Annotation__t =
     Types.Annotation.t = {
@@ -31,34 +32,92 @@ module Version1 = {
     record =>
       switch (Js.Json.classify(record)) {
       | JSONObject(dict) =>
-        let inner = attr_stop => {
-          let inner = attr_start => {
-            let inner = attr_uri =>
-              Belt.Result.Ok(
-                {uri: attr_uri, start: attr_start, stop: attr_stop}: _Types__reference,
-              );
-            switch (Js.Dict.get(dict, "uri")) {
-            | None => Belt.Result.Error(["No attribute 'uri'"])
+        let inner = attr_text => {
+          let inner = attr_stop => {
+            let inner = attr_start => {
+              let inner = attr_uri =>
+                Belt.Result.Ok(
+                  {
+                    uri: attr_uri,
+                    start: attr_start,
+                    stop: attr_stop,
+                    text: attr_text,
+                  }: _Types__reference,
+                );
+              switch (Js.Dict.get(dict, "uri")) {
+              | None => Belt.Result.Error(["No attribute 'uri'"])
+              | Some(json) =>
+                switch (
+                  (
+                    string =>
+                      switch (Js.Json.classify(string)) {
+                      | JSONString(string) => Belt.Result.Ok(string)
+                      | _ => Error(["expected a string"])
+                      }
+                  )(
+                    json,
+                  )
+                ) {
+                | Belt.Result.Error(error) =>
+                  Belt.Result.Error(["attribute 'uri'", ...error])
+                | Ok(data) => inner(data)
+                }
+              };
+            };
+            switch (Js.Dict.get(dict, "start")) {
+            | None => Belt.Result.Error(["No attribute 'start'"])
             | Some(json) =>
               switch (
                 (
-                  string =>
-                    switch (Js.Json.classify(string)) {
-                    | JSONString(string) => Belt.Result.Ok(string)
-                    | _ => Error(["expected a string"])
+                  json =>
+                    switch (Js.Json.classify(json)) {
+                    | JSONArray([|arg0, arg1|]) =>
+                      switch (
+                        (
+                          number =>
+                            switch (Js.Json.classify(number)) {
+                            | JSONNumber(number) =>
+                              Belt.Result.Ok(int_of_float(number))
+                            | _ => Error(["Expected a float"])
+                            }
+                        )(
+                          arg1,
+                        )
+                      ) {
+                      | Belt.Result.Ok(arg1) =>
+                        switch (
+                          (
+                            string =>
+                              switch (Js.Json.classify(string)) {
+                              | JSONString(string) => Belt.Result.Ok(string)
+                              | _ => Error(["expected a string"])
+                              }
+                          )(
+                            arg0,
+                          )
+                        ) {
+                        | Belt.Result.Ok(arg0) =>
+                          Belt.Result.Ok((arg0, arg1))
+                        | Error(error) =>
+                          Belt.Result.Error(["tuple element 0", ...error])
+                        }
+                      | Error(error) =>
+                        Belt.Result.Error(["tuple element 1", ...error])
+                      }
+                    | _ => Belt.Result.Error(["Expected an array"])
                     }
                 )(
                   json,
                 )
               ) {
               | Belt.Result.Error(error) =>
-                Belt.Result.Error(["attribute 'uri'", ...error])
+                Belt.Result.Error(["attribute 'start'", ...error])
               | Ok(data) => inner(data)
               }
             };
           };
-          switch (Js.Dict.get(dict, "start")) {
-          | None => Belt.Result.Error(["No attribute 'start'"])
+          switch (Js.Dict.get(dict, "stop")) {
+          | None => Belt.Result.Error(["No attribute 'stop'"])
           | Some(json) =>
             switch (
               (
@@ -103,58 +162,27 @@ module Version1 = {
               )
             ) {
             | Belt.Result.Error(error) =>
-              Belt.Result.Error(["attribute 'start'", ...error])
+              Belt.Result.Error(["attribute 'stop'", ...error])
             | Ok(data) => inner(data)
             }
           };
         };
-        switch (Js.Dict.get(dict, "stop")) {
-        | None => Belt.Result.Error(["No attribute 'stop'"])
+        switch (Js.Dict.get(dict, "text")) {
+        | None => Belt.Result.Error(["No attribute 'text'"])
         | Some(json) =>
           switch (
             (
-              json =>
-                switch (Js.Json.classify(json)) {
-                | JSONArray([|arg0, arg1|]) =>
-                  switch (
-                    (
-                      number =>
-                        switch (Js.Json.classify(number)) {
-                        | JSONNumber(number) =>
-                          Belt.Result.Ok(int_of_float(number))
-                        | _ => Error(["Expected a float"])
-                        }
-                    )(
-                      arg1,
-                    )
-                  ) {
-                  | Belt.Result.Ok(arg1) =>
-                    switch (
-                      (
-                        string =>
-                          switch (Js.Json.classify(string)) {
-                          | JSONString(string) => Belt.Result.Ok(string)
-                          | _ => Error(["expected a string"])
-                          }
-                      )(
-                        arg0,
-                      )
-                    ) {
-                    | Belt.Result.Ok(arg0) => Belt.Result.Ok((arg0, arg1))
-                    | Error(error) =>
-                      Belt.Result.Error(["tuple element 0", ...error])
-                    }
-                  | Error(error) =>
-                    Belt.Result.Error(["tuple element 1", ...error])
-                  }
-                | _ => Belt.Result.Error(["Expected an array"])
+              string =>
+                switch (Js.Json.classify(string)) {
+                | JSONString(string) => Belt.Result.Ok(string)
+                | _ => Error(["expected a string"])
                 }
             )(
               json,
             )
           ) {
           | Belt.Result.Error(error) =>
-            Belt.Result.Error(["attribute 'stop'", ...error])
+            Belt.Result.Error(["attribute 'text'", ...error])
           | Ok(data) => inner(data)
           }
         };
@@ -437,6 +465,7 @@ module Version1 = {
               |]);
             },
           ),
+          ("text", Js.Json.string(record.text)),
         |]),
       )
   and serialize_Types__Annotation__t: _Types__Annotation__t => target =

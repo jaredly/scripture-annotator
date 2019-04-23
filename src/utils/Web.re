@@ -49,6 +49,7 @@ module Selection = {
   [@bs.get] external anchorOffset: t => int = "";
   [@bs.get] external extentNode: t => Dom.node = "";
   [@bs.get] external extentOffset: t => int = "";
+  [@bs.send] external toString: t => string = "";
   [@bs.send] external setBaseAndExtent: (t, Dom.node, int, Dom.node, int) => unit = "";
 
   let idOffsetToAnchor: (. Dom.node, int) => option((Dom.node, int)) = [%bs.raw {|

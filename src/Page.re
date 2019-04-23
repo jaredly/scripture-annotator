@@ -41,17 +41,18 @@ let make = (~meta, ~volume, ~content, ~state) => {
         uri: meta##uri,
         start,
         stop,
+        text: s->Web.Selection.toString,
       }]
     }))
   };
-
   <div className=Css.(style([
     flexDirection(`row)
   ]))>
     <div
       tabIndex={-1}
       className=Css.(style([
-        width(px(400))
+        width(px(400)),
+        flexShrink(0)
       ]))
       onMouseDown={evt => {
         if (ReactEvent.Mouse.metaKey(evt)) {
@@ -61,8 +62,8 @@ let make = (~meta, ~volume, ~content, ~state) => {
       onKeyDown={evt => {
         if (ReactEvent.Keyboard.key(evt) == "Enter") {
           addSelection();
-        } else {
-          Js.log(evt)
+        // } else {
+        //   Js.log(evt)
         }
       }}
       dangerouslySetInnerHTML={"__html": content##content}
@@ -78,9 +79,10 @@ let make = (~meta, ~volume, ~content, ~state) => {
           key=Js.Int.toString(i)
           style={ReactDOMRe.Style.make(
             ~top=Js.Float.toString(top) ++ "px",
-            ~marginLeft=Js.Int.toString(i * 5) ++ "px",
+            // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
             ~height=Js.Float.toString(height) ++ "px",
             ~backgroundColor="red",
+            ~opacity="0.3",
             ~width="4px",
             ~position="absolute",
             ()

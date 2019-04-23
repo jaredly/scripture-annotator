@@ -99,6 +99,17 @@
                         ]
                       ]
                     ]
+                  ],
+                  [
+                    "text",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
                   ]
                 ]
               ]
