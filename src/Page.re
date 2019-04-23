@@ -1,8 +1,12 @@
+
 let reduce = (state: Types.state, action) => switch action {
-  | `AddAnnotation(annotation: Types.Annotation.t) => {
-    Database.setItem(Database.annotationDb, annotation.id, annotation)->ignore;
-    {...state, Types.annotations: state.annotations->Map.String.set(annotation.id, annotation)}
+  | `Save => {
+    let current = state.current->Types.Annotation.prepare;
+    Database.setItem(Database.annotationDb, current.id, current)->ignore;
+    {...state, current, Types.annotations: state.annotations->Map.String.set(current.id, current)}
   }
+  | `Clear => {...state, current: state.current->Types.Annotation.clear}
+  | `Update(current) => {...state, current}
 };
 
 [@react.component]
@@ -24,7 +28,9 @@ let make = (~meta, ~volume, ~content, ~state) => {
     <div />
     <AnnotationEditor
       state
-      onSave={annotation => dispatch(`AddAnnotation(annotation))}
+      onChange={annotation => dispatch(`Update(annotation))}
+      onClear={annotation => dispatch(`Clear)}
+      onSave={annotation => dispatch(`Save)}
     />
   </div>;
 };

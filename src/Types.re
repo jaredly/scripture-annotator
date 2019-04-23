@@ -1,7 +1,7 @@
 type reference = {
   uri: string,
-  start: (int, int),
-  stop: (int, int),
+  start: (string, int),
+  stop: (string, int),
 };
 
 let newId = () =>
@@ -19,6 +19,15 @@ module Annotation = {
     modified: float,
   };
 
+  let prepare = ann => {
+    ...ann,
+    id: ann.id == "" ? newId() : ann.id,
+    created: ann.created == 0. ? Js.Date.now() : ann.created,
+    modified: Js.Date.now()
+  };
+
+  let isValid = ann => ann.references != [];
+
   let empty = {
     id: "",
     tags: [],
@@ -33,7 +42,16 @@ module Annotation = {
     id: newId(),
     created: Js.Date.now(),
     modified: Js.Date.now(),
-  }
+  };
+
+  let clear = annotation => {
+    ...annotation,
+    id: "",
+    notes: "",
+    references: [],
+    created: 0.,
+    modified: 0.,
+  };
 
   let create = (~tags, ~references, ~notes) => {
     id: newId(),
@@ -58,4 +76,5 @@ module Tag = {
 type state = {
   annotations: Map.String.t(Annotation.t),
   tags: Map.String.t(Tag.t),
+  current: Annotation.t,
 };

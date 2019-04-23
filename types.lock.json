@@ -61,7 +61,7 @@
                           "Reference",
                           [
                             "Builtin",
-                            "int"
+                            "string"
                           ],
                           []
                         ],
@@ -85,7 +85,7 @@
                           "Reference",
                           [
                             "Builtin",
-                            "int"
+                            "string"
                           ],
                           []
                         ],

@@ -3,8 +3,8 @@ module Types1 = {
   type _Types__reference =
     Types.reference = {
       uri: string,
-      start: (int, int),
-      stop: (int, int),
+      start: (string, int),
+      stop: (string, int),
     }
   and _Types__Annotation__t =
     Types.Annotation.t = {
@@ -80,11 +80,10 @@ module Version1 = {
                     | Belt.Result.Ok(arg1) =>
                       switch (
                         (
-                          number =>
-                            switch (Js.Json.classify(number)) {
-                            | JSONNumber(number) =>
-                              Belt.Result.Ok(int_of_float(number))
-                            | _ => Error(["Expected a float"])
+                          string =>
+                            switch (Js.Json.classify(string)) {
+                            | JSONString(string) => Belt.Result.Ok(string)
+                            | _ => Error(["expected a string"])
                             }
                         )(
                           arg0,
@@ -132,11 +131,10 @@ module Version1 = {
                   | Belt.Result.Ok(arg1) =>
                     switch (
                       (
-                        number =>
-                          switch (Js.Json.classify(number)) {
-                          | JSONNumber(number) =>
-                            Belt.Result.Ok(int_of_float(number))
-                          | _ => Error(["Expected a float"])
+                        string =>
+                          switch (Js.Json.classify(string)) {
+                          | JSONString(string) => Belt.Result.Ok(string)
+                          | _ => Error(["expected a string"])
                           }
                       )(
                         arg0,
@@ -424,7 +422,7 @@ module Version1 = {
             {
               let (arg0, arg1) = record.start;
               Js.Json.array([|
-                (int => Js.Json.number(float_of_int(int)))(arg0),
+                Js.Json.string(arg0),
                 (int => Js.Json.number(float_of_int(int)))(arg1),
               |]);
             },
@@ -434,7 +432,7 @@ module Version1 = {
             {
               let (arg0, arg1) = record.stop;
               Js.Json.array([|
-                (int => Js.Json.number(float_of_int(int)))(arg0),
+                Js.Json.string(arg0),
                 (int => Js.Json.number(float_of_int(int)))(arg1),
               |]);
             },

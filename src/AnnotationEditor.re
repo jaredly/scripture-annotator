@@ -1,16 +1,21 @@
+let str = React.string;
 
 module Styles = {
   open Css;
 };
 
 [@react.component]
-let make = (~state as {Types.annotations, tags}, ~onSave) => {
-  let (annotation, update) = Hooks.useState(Types.Annotation.empty);
-
+let make = (~onChange, ~state as {Types.annotations, tags, current as annotation}, ~onSave, ~onClear) => {
   <div>
     <BlurInput
       value={annotation.notes}
-      onChange={notes => update({...annotation, notes})}
+      onChange={notes => onChange({...annotation, notes})}
     />
-  </div>
+    <button
+      disabled={!annotation->Types.Annotation.isValid}
+      onClick={evt => onSave()}>
+      {str("Save")}
+    </button>
+    <button onClick={evt => onClear()}> {str("Cancel")} </button>
+  </div>;
 };

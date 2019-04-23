@@ -67,5 +67,5 @@ let load = () => {
       annotationDb->getAll(annotation => annotation.id),
       tagsDb->getAll(tag => tag.id),
     ));
-  Lets.Async.resolve({Types.annotations, tags});
+  Lets.Async.resolve({Types.annotations, tags, current: Types.Annotation.empty});
 };
