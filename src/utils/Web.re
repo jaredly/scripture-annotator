@@ -18,6 +18,27 @@ type window;
 [@bs.send] external addEventListener: (window, string, ('event) => unit, bool) => unit = "";
 [@bs.send] external removeEventListener: (window, string, ('event) => unit, bool) => unit = "";
 [@bs.send] external getElementById: (Dom.node, string) => option(Dom.node) = "";
+type rect = {
+  .
+  "top": float,
+  "height": float,
+  "width": float,
+  "left": float,
+  "bottom": float,
+  "right": float,
+};
+[@bs.send] external getBoundingClientRect: Dom.node => rect = "";
+
+module Range = {
+  type t;
+  [@bs.send] external createRange: Dom.node => t = "";
+  let createRange = () => document->createRange;
+  [@bs.send] external setStart: (t, Dom.node, int) => unit = "";
+  let setStart = (t, (node, off)) => setStart(t, node, off);
+  [@bs.send] external setEnd: (t, Dom.node, int) => unit = "";
+  let setEnd = (t, (node, off)) => setEnd(t, node, off);
+  [@bs.send] external getBoundingClientRect: t => rect = "";
+};
 
 module Selection = {
   type t;
@@ -50,12 +71,16 @@ module Selection = {
       return undefined
     }
   |}];
+  let fromSingleIdOffset = ((nodeId, offset)) => {
+    let%Lets.Opt anchor = document->getElementById(nodeId);
+    let%Lets.Opt (anchor, offset) = idOffsetToAnchor(. anchor, offset);
+    Some((anchor, offset))
+  };
   let fromIdOffset = (selection, (anchorId, aoff), (extentId, eoff)) => {
     module Opt = Lets.OptConsume;
-    let%Opt anchor = document->getElementById(anchorId);
-    let%Opt extent = document->getElementById(extentId);
-    let%Opt (anchor, aoff) = idOffsetToAnchor(. anchor, aoff);
-    let%Opt (extent, eoff) = idOffsetToAnchor(. extent, eoff);
+    let%Opt (anchor, aoff) = fromSingleIdOffset((anchorId, aoff));
+    let%Opt (extent, eoff) = fromSingleIdOffset((extentId, eoff));
+    // let%Opt (extent, eoff) = idOffsetToAnchor(. extent, eoff);
     selection->setBaseAndExtent(anchor, aoff, extent, eoff);
   };
 
