@@ -4,6 +4,11 @@ type reference = {
   stop: (int, int),
 };
 
+let newId = () =>
+  Js.Math.random()
+  ->Js.Float.toStringWithRadix(~radix=36)
+  ->Js.String2.sliceToEnd(~from=2);
+
 module Annotation = {
   type t = {
     id: string,
@@ -13,6 +18,31 @@ module Annotation = {
     created: float,
     modified: float,
   };
+
+  let empty = {
+    id: "",
+    tags: [],
+    references: [],
+    notes: "",
+    created: 0.,
+    modified: 0.,
+  };
+
+  let clone = annotation => {
+    ...annotation,
+    id: newId(),
+    created: Js.Date.now(),
+    modified: Js.Date.now(),
+  }
+
+  let create = (~tags, ~references, ~notes) => {
+    id: newId(),
+    tags,
+    references,
+    notes,
+    created: Js.Date.now(),
+    modified: Js.Date.now(),
+  };
 };
 
 module Tag = {
@@ -21,6 +51,8 @@ module Tag = {
     name: string,
     color: string,
   };
+
+  let create = (~name, ~color) => {id: newId(), name, color};
 };
 
 type state = {

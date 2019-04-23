@@ -11,6 +11,14 @@ let useHash = () => {
   hash
 };
 
+let useFromProps = (currentProp, onChange) => {
+  let prevValue = React.useRef(currentProp);
+  if (prevValue->React.Ref.current != currentProp) {
+    prevValue->React.Ref.setCurrent(currentProp);
+    onChange(currentProp);
+  };
+}
+
 let useLoading = getter => {
   let (nav, setNav) = useState(None);
   React.useEffect0(() => {
@@ -22,3 +30,4 @@ let useLoading = getter => {
   });
   nav
 };
+

@@ -7,6 +7,12 @@ module Async = {
   let reject = Js.Promise.reject;
   let map = (promise, fn) => Js.Promise.then_(v => Js.Promise.resolve(fn(v)), promise);
 
+  let orNone = prom => {
+    prom
+    |> Js.Promise.then_(v => Js.Promise.resolve(Some(v)))
+    |> Js.Promise.catch(err => Js.Promise.resolve(None));
+  };
+
   module Wrap = {
     let let_ = (promise, cont) =>
       Js.Promise.then_(v => Js.Promise.resolve(cont(v)), promise);

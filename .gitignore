@@ -1,7 +1,7 @@
-lib
-node_modules
-raw_data
-data
+/lib
+/node_modules
+/raw_data
+/data
 .merlin
-bundle
+/bundle
 *.bs.js
