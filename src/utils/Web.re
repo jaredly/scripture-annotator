@@ -104,6 +104,7 @@ module Selection = {
   let toIdOffset = selection => {
     let%Lets.Opt anchor = anchorToIdOffset(. selection->anchorNode, selection->anchorOffset);
     let%Lets.Opt extent = anchorToIdOffset(. selection->extentNode, selection->extentOffset);
+    // OOOPS make this work for >=10
     if (fst(anchor) > fst(extent) || (fst(anchor) == fst(extent) && snd(anchor) > snd(extent))) {
       Some((extent, anchor))
     } else {

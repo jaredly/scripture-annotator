@@ -31,13 +31,40 @@ let make = (~meta, ~volume, ~content, ~state) => {
       // })->Array.concatMany
     }
   }, (node, state.annotations, state.current));
+
+  let addSelection = () => {
+    let s = Web.Selection.current();
+    let%Lets.OptConsume (start, stop) = s->Web.Selection.toIdOffset;
+    dispatch(`Update({
+      ...state.current,
+      references: state.current.references @ [{
+        uri: meta##uri,
+        start,
+        stop,
+      }]
+    }))
+  };
+
   <div className=Css.(style([
     flexDirection(`row)
   ]))>
     <div
+      tabIndex={-1}
       className=Css.(style([
         width(px(400))
       ]))
+      onMouseDown={evt => {
+        if (ReactEvent.Mouse.metaKey(evt)) {
+          addSelection()
+        }
+      }}
+      onKeyDown={evt => {
+        if (ReactEvent.Keyboard.key(evt) == "Enter") {
+          addSelection();
+        } else {
+          Js.log(evt)
+        }
+      }}
       dangerouslySetInnerHTML={"__html": content##content}
       ref={ReactDOMRe.Ref.callbackDomRef(node =>
         setNode(node->Js.Nullable.toOption)
