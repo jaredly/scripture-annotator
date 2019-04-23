@@ -75,7 +75,9 @@ module Page = {
       <Loading
         value=data
         loaded={data => {
-          <div dangerouslySetInnerHTML={{"__html": data##content}} />
+          <div>
+            <div dangerouslySetInnerHTML={{"__html": data##content}} />
+          </div>
         }}
       />
     </div>
@@ -90,9 +92,8 @@ module App = {
     <Loading
       value=nav
       loaded={nav => {
-        // Js.log(nav);
         let parts = hash == "" ? None : Some(hash->Js.String.sliceToEnd(~from=1) |> Js.String.split(":"));
-        Js.log(parts)
+        // Js.log(parts)
         let path = {
           let%Lets.Opt parts = parts;
           switch parts {
