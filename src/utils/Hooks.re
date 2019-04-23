@@ -11,6 +11,13 @@ let useHash = () => {
   hash
 };
 
+let useMouseUp = (onMouseUp) => {
+  React.useEffect(() => {
+    Web.addEventListener(Web.window, "mouseup", onMouseUp, true);
+    Some(() => Web.removeEventListener(Web.window, "mouseup", onMouseUp, true))
+  })
+}
+
 let useFromProps = (currentProp, onChange) => {
   let prevValue = React.useRef(currentProp);
   if (prevValue->React.Ref.current != currentProp) {

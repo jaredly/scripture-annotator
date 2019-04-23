@@ -28,6 +28,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
     <div />
     <AnnotationEditor
       state
+      uri={meta##uri}
       onChange={annotation => dispatch(`Update(annotation))}
       onClear={annotation => dispatch(`Clear)}
       onSave={annotation => dispatch(`Save)}
