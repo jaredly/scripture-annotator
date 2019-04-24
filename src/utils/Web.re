@@ -41,6 +41,12 @@ module Range = {
   [@bs.send] external collapse: (t, ~toStart: bool) => unit = "";
   [@bs.send] external cloneRange: t => t = "";
 
+  let toHTML: t => string = [%bs.raw {|
+  function (range) {
+    return [...range.cloneContents().children].map(child => child.outerHTML).join('\n')
+  }
+  |}];
+
   [@bs.get] external startContainer: t => Dom.node = "";
   [@bs.get] external startOffset: t => int = "";
   [@bs.get] external endContainer: t => Dom.node = "";

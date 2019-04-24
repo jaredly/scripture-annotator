@@ -41,7 +41,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
         uri: meta##uri,
         start,
         stop,
-        text: s->Web.Selection.toString,
+        text: s->Web.Selection.getRange->Web.Range.toHTML,
       }]
     }))
   };

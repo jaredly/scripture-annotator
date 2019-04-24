@@ -27,7 +27,7 @@ let make = (~uri, ~onChange, ~state as {Types.annotations, tags, current as anno
             uri,
             start,
             stop,
-            text: s->Web.Selection.toString,
+            text: s->Web.Selection.getRange->Web.Range.toHTML,
           }]
         })
         Js.log2(start, stop)
@@ -59,8 +59,10 @@ let make = (~uri, ~onChange, ~state as {Types.annotations, tags, current as anno
           fontSize(`percent(80.)),
           margin2(~h=`zero, ~v=px(8)),
           whiteSpace(`preWrap)
-        ]))>
-          {React.string(text)}
+        ]))
+        dangerouslySetInnerHTML={{"__html": text}}
+        >
+          // {React.string(text)}
         </div>
         <button onClick={evt => {
           onChange({...annotation, references: annotation.references->List.keep(r => r != ref)})
