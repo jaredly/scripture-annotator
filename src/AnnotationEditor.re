@@ -52,6 +52,9 @@ let make =
       ~onSave,
       ~addSelection,
       ~onClear,
+      ~onAddTag,
+      ~onCreateTag,
+      ~onRemoveTag,
     ) => {
   <div className=Css.(style([width(px(300))]))>
     <div className=Css.(style([flexDirection(`row)]))>
@@ -65,10 +68,22 @@ let make =
         {React.string("Add selection")}
       </button>
     </div>
+    {str("Notes")}
     <BlurTextArea
       value={annotation.notes}
       onChange={notes => onChange({...annotation, notes})}
     />
+    {str("Tags")}
+    <TagsEditor
+      tags
+      current=annotation.tags
+      onCreate=onCreateTag
+      onAdd=onAddTag
+      onRemove=onRemoveTag
+    />
+    <div>
+      {str("Annotations")}
+    </div>
     {annotation.references
      ->List.mapWithIndex((i, ref) =>
          <Reference

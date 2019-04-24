@@ -5,12 +5,45 @@ let reduce = (state: Types.state, action) =>
     Database.setItem(Database.annotationDb, current.id, current)->ignore;
     {
       ...state,
-      current,
+      current: current->Types.Annotation.clear,
       Types.annotations:
         state.annotations->Map.String.set(current.id, current),
     };
   | `Clear => {...state, current: state.current->Types.Annotation.clear}
   | `Update(current) => {...state, current}
+  | `Select(id) =>
+    switch (state.annotations->Map.String.get(id)) {
+    | None => state
+    | Some(current) => {...state, current}
+    }
+  | `RemoveTag(id) => {
+      ...state,
+      current: {
+        ...state.current,
+        tags: state.current.tags->List.keep(t => t != id),
+      },
+    }
+  | `AddTag(id) => {
+      ...state,
+      current: {
+        ...state.current,
+        tags: state.current.tags->List.keep(t => t != id)->List.concat([id]),
+      },
+    }
+  | `CreateTag(name) =>
+    let tag = Types.Tag.create(~name, ~color="#afa");
+    Database.tagsDb->Database.setItem(tag.id, tag)->ignore;
+    {
+      ...state,
+      tags: state.tags->Map.String.set(tag.id, tag),
+      current: {
+        ...state.current,
+        tags:
+          state.current.tags
+          ->List.keep(t => t != tag.id)
+          ->List.concat([tag.id]),
+      },
+    };
   };
 
 let positionReference = (ref: Types.reference) => {
@@ -82,8 +115,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
       }
       onKeyDown={evt =>
         if (ReactEvent.Keyboard.key(evt) == "Enter") {
-          addSelection// } else {
-                      ();
+          addSelection(); // } else {
                       //   Js.log(evt)
         }
       }
@@ -103,7 +135,9 @@ let make = (~meta, ~volume, ~content, ~state) => {
       {positionedAnnotations
        ->Array.mapWithIndex((i, (ann, references)) =>
            <div
-             key={string_of_int(i)} className=Css.(style([width(px(4))]))>
+             onClick={evt => dispatch(`Select(ann.id))}
+             key={string_of_int(i)}
+             className=Css.(style([width(px(4))]))>
              {references
               ->Array.mapWithIndex((i, (top, height, ref)) =>
                   <div
@@ -132,6 +166,9 @@ let make = (~meta, ~volume, ~content, ~state) => {
       onChange={annotation => dispatch(`Update(annotation))}
       onClear={annotation => dispatch(`Clear)}
       onSave={annotation => dispatch(`Save)}
+      onAddTag={id => dispatch(`AddTag(id))}
+      onCreateTag={name => dispatch(`CreateTag(name))}
+      onRemoveTag={name => dispatch(`RemoveTag(name))}
     />
   </div>;
 };
