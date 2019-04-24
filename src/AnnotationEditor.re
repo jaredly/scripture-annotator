@@ -58,7 +58,6 @@ let make = (~uri, ~onChange, ~state as {Types.annotations, tags, current as anno
         <div className=Css.(style([
           fontSize(`percent(80.)),
           margin2(~h=`zero, ~v=px(8)),
-          whiteSpace(`preWrap)
         ]))
         dangerouslySetInnerHTML={{"__html": text}}
         >

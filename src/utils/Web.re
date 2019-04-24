@@ -43,7 +43,7 @@ module Range = {
 
   let toHTML: t => string = [%bs.raw {|
   function (range) {
-    return [...range.cloneContents().children].map(child => child.outerHTML).join('\n')
+    return [...range.cloneContents().childNodes].map(child => child.outerHTML || child.textContent).join('')
   }
   |}];
 

@@ -9,6 +9,16 @@ let reduce = (state: Types.state, action) => switch action {
   | `Update(current) => {...state, current}
 };
 
+let positionReference = (ref: Types.reference) => {
+  let%Lets.Opt start = Web.Selection.fromSingleIdOffset(ref.start);
+  let%Lets.Opt stop = Web.Selection.fromSingleIdOffset(ref.stop);
+  let range = Web.Range.createRange();
+  range->Web.Range.setStart(start);
+  range->Web.Range.setEnd(stop);
+  let rect = range->Web.Range.getBoundingClientRect;
+  Some(rect)
+};
+
 [@react.component]
 let make = (~meta, ~volume, ~content, ~state) => {
   let (state, dispatch) = React.useReducer(reduce, state);
@@ -17,18 +27,20 @@ let make = (~meta, ~volume, ~content, ~state) => {
     if (node == None) {
       [||]
     } else {
-      // state.annotations->Map.String.valuesToArray->Array.map(ann => {
-        state.current.references->List.toArray->Array.keepMap(ref => {
+      state.annotations
+      ->Map.String.remove(state.current.id)
+      ->Map.String.valuesToArray
+      ->Array.concat(
+        [|state.current|]
+      )
+      ->Array.keepMap(ann => {
+        let relevant = ann.references->List.toArray->Array.keepMap(ref => {
           let%Lets.Opt () = ref.uri == meta##uri ? Some(()) : None
-          let%Lets.Opt start = Web.Selection.fromSingleIdOffset(ref.start);
-          let%Lets.Opt stop = Web.Selection.fromSingleIdOffset(ref.stop);
-          let range = Web.Range.createRange();
-          range->Web.Range.setStart(start);
-          range->Web.Range.setEnd(stop);
-          let rect = range->Web.Range.getBoundingClientRect;
-          Some((rect##top, rect##height, ref, state.current))
-        })
-      // })->Array.concatMany
+          let%Lets.Opt rect = positionReference(ref);
+          Some((rect##top, rect##height, ref))
+        });
+        relevant == [||] ? None : Some((ann, relevant))
+      })
     }
   }, (node, state.annotations, state.current));
 
@@ -72,23 +84,31 @@ let make = (~meta, ~volume, ~content, ~state) => {
       )}
     />
     <div className=Css.(style([
-      width(px(50)),
+      minWidth(px(50)),
       marginLeft(px(10)),
+      flexDirection(`row)
     ]))>
-      {positionedAnnotations->Array.mapWithIndex((i, (top, height, ref, ann)) => (
+      {positionedAnnotations->Array.mapWithIndex((i, (ann, references)) => (
         <div
-          key=Js.Int.toString(i)
-          style={ReactDOMRe.Style.make(
-            ~top=Js.Float.toString(top) ++ "px",
-            // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
-            ~height=Js.Float.toString(height) ++ "px",
-            ~backgroundColor="red",
-            ~opacity="0.3",
-            ~width="4px",
-            ~position="absolute",
-            ()
-          )}
-        />
+          key=string_of_int(i)
+          className=Css.(style([width(px(4))]))
+        >
+          {references->Array.mapWithIndex((i, (top, height, ref)) => (
+            <div
+              key=Js.Int.toString(i)
+              style={ReactDOMRe.Style.make(
+                ~top=Js.Float.toString(top) ++ "px",
+                // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
+                ~height=Js.Float.toString(height) ++ "px",
+                ~backgroundColor="red",
+                ~opacity="0.3",
+                ~width="4px",
+                ~position="absolute",
+                ()
+              )}
+            />
+          ))->React.array}
+        </div>
       ))->React.array}
     </div>
     <AnnotationEditor
