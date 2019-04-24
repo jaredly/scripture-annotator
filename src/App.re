@@ -71,7 +71,7 @@ module PageWrapper = {
   [@react.component]
   let make = (~content, ~volume) => {
     <div>
-      {React.string("Content: " ++ content##title)}
+      {React.string(content##title)}
       <Loading
         fn={() => 
           Js.Promise.all2((

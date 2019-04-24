@@ -128,6 +128,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
     <AnnotationEditor
       state
       uri={meta##uri}
+      addSelection
       onChange={annotation => dispatch(`Update(annotation))}
       onClear={annotation => dispatch(`Clear)}
       onSave={annotation => dispatch(`Save)}
