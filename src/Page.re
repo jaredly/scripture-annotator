@@ -72,7 +72,8 @@ let make = (~meta, ~volume, ~content, ~state) => {
       )}
     />
     <div className=Css.(style([
-      width(px(50))
+      width(px(50)),
+      marginLeft(px(10)),
     ]))>
       {positionedAnnotations->Array.mapWithIndex((i, (top, height, ref, ann)) => (
         <div

@@ -35,11 +35,11 @@ let make = (~uri, ~onChange, ~state as {Types.annotations, tags, current as anno
     }}>
       {React.string("Add selection")}
     </button>
-    {annotation.references->List.map((ref) => {
+    {annotation.references->List.mapWithIndex((i, ref) => {
       let {Types.uri, start, stop, text} = ref;
       <div onClick={(_evt) => {
         Web.Selection.current()->Web.Selection.fromIdOffset(start, stop)
-      }}>
+      }} key={string_of_int(i)}>
         {React.string(fst(start) ++ ":" ++ fst(stop))}
         <div>
           {React.string(text)}

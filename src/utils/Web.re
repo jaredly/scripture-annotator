@@ -38,6 +38,15 @@ module Range = {
   [@bs.send] external setEnd: (t, Dom.node, int) => unit = "";
   let setEnd = (t, (node, off)) => setEnd(t, node, off);
   [@bs.send] external getBoundingClientRect: t => rect = "";
+  [@bs.send] external collapse: (t, ~toStart: bool) => unit = "";
+  [@bs.send] external cloneRange: t => t = "";
+
+  [@bs.get] external startContainer: t => Dom.node = "";
+  [@bs.get] external startOffset: t => int = "";
+  [@bs.get] external endContainer: t => Dom.node = "";
+  [@bs.get] external endOffset: t => int = "";
+  let start = r => (r->startContainer, r->startOffset);
+  let end_ = r => (r->endContainer, r->endOffset);
 };
 
 module Selection = {
@@ -51,6 +60,12 @@ module Selection = {
   [@bs.get] external extentOffset: t => int = "";
   [@bs.send] external toString: t => string = "";
   [@bs.send] external setBaseAndExtent: (t, Dom.node, int, Dom.node, int) => unit = "";
+
+  [@bs.send] external getRangeAt: (t, int) => Range.t = "";
+  let getRange = t => getRangeAt(t, 0);
+
+  let anchor = selection => (selection->anchorNode, selection->anchorOffset);
+  let extent = selection => (selection->extentNode, selection->extentOffset);
 
   let idOffsetToAnchor: (. Dom.node, int) => option((Dom.node, int)) = [%bs.raw {|
     function idOffsetToAnchor(node, offset) {
@@ -103,14 +118,11 @@ module Selection = {
   }
   |}];
   let toIdOffset = selection => {
-    let%Lets.Opt anchor = anchorToIdOffset(. selection->anchorNode, selection->anchorOffset);
-    let%Lets.Opt extent = anchorToIdOffset(. selection->extentNode, selection->extentOffset);
-    // OOOPS make this work for >=10
-    if (fst(anchor) > fst(extent) || (fst(anchor) == fst(extent) && snd(anchor) > snd(extent))) {
-      Some((extent, anchor))
-    } else {
-      Some((anchor, extent))
-    }
+    let range = selection->getRange;
+    open Range;
+    let%Lets.Opt start = anchorToIdOffset(. range->startContainer, range->startOffset);
+    let%Lets.Opt end_ = anchorToIdOffset(. range->endContainer, range->endOffset);
+    Some((start, end_))
   };
 };
 
