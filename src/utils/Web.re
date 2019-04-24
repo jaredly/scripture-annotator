@@ -92,16 +92,51 @@ module Selection = {
     let%Lets.Opt (anchor, offset) = idOffsetToAnchor(. anchor, offset);
     Some((anchor, offset))
   };
-  let fromIdOffset = (selection, (anchorId, aoff), (extentId, eoff)) => {
+  let fromIdOffset = (selection, start, end_) => {
     module Opt = Lets.OptConsume;
-    let%Opt (anchor, aoff) = fromSingleIdOffset((anchorId, aoff));
-    let%Opt (extent, eoff) = fromSingleIdOffset((extentId, eoff));
-    // let%Opt (extent, eoff) = idOffsetToAnchor(. extent, eoff);
+    let%Opt (anchor, aoff) = fromSingleIdOffset(start);
+    let%Opt (extent, eoff) = fromSingleIdOffset(end_);
     selection->setBaseAndExtent(anchor, aoff, extent, eoff);
   };
 
-  let anchorToIdOffset: (. Dom.node, int) => option((string, int)) = [%bs.raw {|
-  function getOffset(node, offset) {
+  let adjustForWordBoundaries: (. (Dom.node, int), bool) => (Dom.node, int) = [%bs.raw {|
+  function ([node, offset], back) {
+    const text = node.textContent
+    console.log('checking', back, text.slice(0, offset), text.slice(offset))
+    if (back) {
+      const before = text.slice(0, offset).match(/\w+$/)
+      if (before) {
+        console.log(before)
+        offset -= before[0].length
+      }
+      return [node, offset]
+    } else {
+      const after = text.slice(offset).match(/^\w+/)
+      if (after) {
+        console.log(after)
+        offset += after[0].length
+      }
+      return [node, offset]
+    }
+  }
+  |}];
+  let adjustForWordBoundaries = (noff, back) => adjustForWordBoundaries(. noff, back);
+
+  let adjustSelection = selection => {
+    let range = selection->getRange;
+    open Range;
+    let (snode, soff) = range->start->adjustForWordBoundaries(true);
+    let (enode, eoff) = range->end_->adjustForWordBoundaries(false);
+    selection->setBaseAndExtent(
+      snode,
+      soff,
+      enode,
+      eoff
+    );
+  };
+
+  let anchorToIdOffset: (. (Dom.node, int)) => option((string, int)) = [%bs.raw {|
+  function getOffset([node, offset]) {
     if (node.className === 'verse' && node.id) {
       return [node.id, offset]
     }
@@ -114,15 +149,15 @@ module Selection = {
       offset += node.textContent.length
       node = node.previousSibling
     }
-    return getOffset(parent, offset)
+    return getOffset([parent, offset])
   }
   |}];
   let toIdOffset = selection => {
+    selection->adjustSelection;
     let range = selection->getRange;
-    Js.log(range)
     open Range;
-    let%Lets.Opt start = anchorToIdOffset(. range->startContainer, range->startOffset);
-    let%Lets.Opt end_ = anchorToIdOffset(. range->endContainer, range->endOffset);
+    let%Lets.Opt start = anchorToIdOffset(. range->start);
+    let%Lets.Opt end_ = anchorToIdOffset(. range->end_);
     Some((start, end_))
   };
 };
