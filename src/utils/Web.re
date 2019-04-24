@@ -76,7 +76,7 @@ module Selection = {
       for (let i = 0; i < node.childNodes.length; i++) {
         const child = node.childNodes[i];
         const length = child.textContent.length
-        if (offset < length) {
+        if (offset <= length) {
           return idOffsetToAnchor(child, offset)
         // } else {
         //   console.log("going past child", offset, length, child)
@@ -119,6 +119,7 @@ module Selection = {
   |}];
   let toIdOffset = selection => {
     let range = selection->getRange;
+    Js.log(range)
     open Range;
     let%Lets.Opt start = anchorToIdOffset(. range->startContainer, range->startOffset);
     let%Lets.Opt end_ = anchorToIdOffset(. range->endContainer, range->endOffset);
