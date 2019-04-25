@@ -67,9 +67,12 @@ let make = (~meta, ~volume, ~content, ~state) => {
           [||];
         } else {
           state.annotations
-          ->Map.String.remove(state.current.id)
+          ->Map.String.set(state.current.id, state.current)
           ->Map.String.valuesToArray
-          ->Array.concat([|state.current|])
+          ->Js.Array.sortInPlaceWith(
+              (a: Types.Annotation.t, b) => compare(a.id, b.id),
+              _,
+            )
           ->Array.keepMap(ann => {
               let relevant =
                 ann.references
@@ -137,19 +140,32 @@ let make = (~meta, ~volume, ~content, ~state) => {
            <div
              onClick={evt => dispatch(`Select(ann.id))}
              key={string_of_int(i)}
-             className=Css.(style([width(px(4))]))>
+             className=Css.(
+               style([
+                 width(px(4)),
+                        cursor(`pointer),
+                 hover([
+                   selector(" > div", [outline(px(1), `solid, black)]),
+                 ]),
+               ])
+             )>
              {references
               ->Array.mapWithIndex((i, (top, height, ref)) =>
                   <div
                     key={Js.Int.toString(i)}
+                    className=Css.(
+                      style([
+                        backgroundColor(rgba(255, 0, 0, 0.3)),
+                        width(px(4)),
+                        position(`absolute),
+                      ])
+                    )
                     style={ReactDOMRe.Style.make(
                       ~top=Js.Float.toString(top) ++ "px",
                       // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
                       ~height=Js.Float.toString(height) ++ "px",
-                      ~backgroundColor="red",
-                      ~opacity="0.3",
-                      ~width="4px",
-                      ~position="absolute",
+                      ~outline=
+                        ann.id == state.current.id ? "1px solid black" : "",
                       (),
                     )}
                   />
