@@ -141,6 +141,39 @@ module Selection = {
     );
   };
 
+  let findVerse: (. Dom.node) => option(Dom.node) = [%bs.raw {|
+  function findVerse(node) {
+    if (node.className === 'verse' && node.id) {
+      return node
+    }
+    const parent = node.parentNode
+    if (!parent || parent === document.body) {
+      return undefined
+    }
+    return findVerse(parent)
+  }
+  |}];
+  let findVerse = m => findVerse(. m);
+
+  let expandToEncompass: (. t, Dom.node, Dom.node) => unit = [%bs.raw {|
+  function (selection, start, end) {
+    if (start === end) {
+      selection.getRangeAt(0).selectNodeContents(start)
+      return
+    }
+    let srange = document.createRange()
+    srange.selectNodeContents(start);
+    let erange = document.createRange()
+    erange.selectNodeContents(end);
+    selection.setBaseAndExtent(
+      srange.startContainer,
+      srange.startOffset,
+      erange.endContainer,
+      erange.endOffset
+    );
+  }
+  |}];
+
   let anchorToIdOffset: (. (Dom.node, int)) => option((string, int)) = [%bs.raw {|
   function getOffset([node, offset]) {
     if (node.className === 'verse' && node.id) {
@@ -158,8 +191,15 @@ module Selection = {
     return getOffset([parent, offset])
   }
   |}];
-  let toIdOffset = selection => {
-    selection->adjustSelection;
+  let toIdOffset = (selection, fullVerses) => {
+    if (fullVerses) {
+      let range = selection->getRange;
+      let%Lets.OptConsume sverse = range->Range.startContainer->findVerse;
+      let%Lets.OptConsume everse = range->Range.endContainer->findVerse;
+      expandToEncompass(. selection, sverse, everse)
+    } else {
+      selection->adjustSelection;
+    };
     let range = selection->getRange;
     open Range;
     let%Lets.Opt start = anchorToIdOffset(. range->start);

@@ -88,9 +88,9 @@ let make = (~meta, ~volume, ~content, ~state) => {
       (node, state.annotations, state.current),
     );
 
-  let addSelection = () => {
+  let addSelection = (fullVerses) => {
     let s = Web.Selection.current();
-    let%Lets.OptConsume (start, stop) = s->Web.Selection.toIdOffset;
+    let%Lets.OptConsume (start, stop) = s->Web.Selection.toIdOffset(fullVerses);
     dispatch(
       `Update({
         ...state.current,
@@ -113,13 +113,12 @@ let make = (~meta, ~volume, ~content, ~state) => {
       className=Css.(style([width(px(400)), flexShrink(0)]))
       onMouseDown={evt =>
         if (ReactEvent.Mouse.metaKey(evt)) {
-          addSelection();
+          addSelection(false);
         }
       }
       onKeyDown={evt =>
         if (ReactEvent.Keyboard.key(evt) == "Enter") {
-          addSelection(); // } else {
-                      //   Js.log(evt)
+          addSelection(evt->ReactEvent.Keyboard.shiftKey);
         }
       }
       dangerouslySetInnerHTML={"__html": content##content}

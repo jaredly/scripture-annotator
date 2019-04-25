@@ -64,7 +64,7 @@ let make =
         {str("Save")}
       </button>
       <button onClick={evt => onClear()}> {str("Cancel")} </button>
-      <button onClick={evt => addSelection()}>
+      <button onClick={evt => addSelection(false)}>
         {React.string("Add selection")}
       </button>
     </div>

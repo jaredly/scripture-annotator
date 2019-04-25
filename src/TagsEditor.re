@@ -91,6 +91,7 @@ module Autocomplete = {
         {items
          ->Array.mapWithIndex((i, {action, contents}) =>
              <div
+             key={string_of_int(i)}
              className=Css.(style([
                hover([
                  backgroundColor(hex("eee"))
@@ -147,7 +148,7 @@ let make =
                let%Lets.OptWrap tag = tags->Map.String.get(id);
                <div
                  className=Styles.tag
-                 id={tag.id}
+                 key={tag.id}
                  style={ReactDOMRe.Style.make(~backgroundColor=tag.color, ())}>
                  {React.string(tag.name)}
                </div>;
