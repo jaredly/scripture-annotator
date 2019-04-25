@@ -80,6 +80,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
                 ->Array.keepMap(ref => {
                     let%Lets.Opt () = ref.uri == meta##uri ? Some() : None;
                     let%Lets.Opt rect = positionReference(ref);
+                    Js.log2(ref, rect);
                     Some((rect##top, rect##height, ref));
                   });
               relevant == [||] ? None : Some((ann, relevant));
@@ -88,9 +89,10 @@ let make = (~meta, ~volume, ~content, ~state) => {
       (node, state.annotations, state.current),
     );
 
-  let addSelection = (fullVerses) => {
+  let addSelection = fullVerses => {
     let s = Web.Selection.current();
-    let%Lets.OptConsume (start, stop) = s->Web.Selection.toIdOffset(fullVerses);
+    let%Lets.OptConsume (start, stop) =
+      s->Web.Selection.toIdOffset(fullVerses);
     dispatch(
       `Update({
         ...state.current,
@@ -141,8 +143,8 @@ let make = (~meta, ~volume, ~content, ~state) => {
              key={string_of_int(i)}
              className=Css.(
                style([
-                 width(px(4)),
-                        cursor(`pointer),
+                 width(px(10)),
+                 cursor(`pointer),
                  hover([
                    selector(" > div", [outline(px(1), `solid, black)]),
                  ]),
@@ -155,7 +157,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
                     className=Css.(
                       style([
                         backgroundColor(rgba(255, 0, 0, 0.3)),
-                        width(px(4)),
+                        width(px(10)),
                         position(`absolute),
                       ])
                     )

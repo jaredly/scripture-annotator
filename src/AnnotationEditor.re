@@ -12,16 +12,28 @@ module Reference = {
       onClick={_evt =>
         Web.Selection.current()->Web.Selection.fromIdOffset(start, stop)
       }
-      className=Css.(style([marginBottom(px(16))]))>
-      {React.string(
-         {let start = fst(start)
-          let end_ = fst(stop)
-          if (start == end_) {
-            start;
-          } else {
-            start ++ "-" ++ end_;
-          }},
-       )}
+      className=Css.(style([marginBottom(px(16)),
+      boxShadow(~blur=px(3), hex("ccc")),
+      padding(px(8)),
+      ]))>
+      <div className=Css.(style([flexDirection(`row), justifyContent(`spaceBetween)]))>
+        {React.string(
+           {let start = fst(start)
+            let end_ = fst(stop)
+            if (start == end_) {
+              start;
+            } else {
+              start ++ "-" ++ end_;
+            }},
+         )}
+        <button
+          onClick={evt => {
+            evt->ReactEvent.Mouse.stopPropagation;
+            onRemove();
+          }}>
+          {React.string("Remove")}
+        </button>
+      </div>
       <div
         className=Css.(
           style([
@@ -32,13 +44,6 @@ module Reference = {
         )
         dangerouslySetInnerHTML={"__html": text}
       />
-      <button
-        onClick={evt => {
-          evt->ReactEvent.Mouse.stopPropagation;
-          onRemove();
-        }}>
-        {React.string("Remove")}
-      </button>
     </div>;
   };
 };
@@ -56,7 +61,7 @@ let make =
       ~onCreateTag,
       ~onRemoveTag,
     ) => {
-  <div className=Css.(style([width(px(300))]))>
+  <div className=Css.(style([width(px(300)), marginLeft(px(16))]))>
     <div className=Css.(style([flexDirection(`row)]))>
       <button
         disabled={!annotation->Types.Annotation.isValid}
@@ -68,22 +73,35 @@ let make =
         {React.string("Add selection")}
       </button>
     </div>
+    <div className=Css.(merge([SharedStyles.label, style([
+      marginBottom(px(8)),
+      marginTop(px(16)),
+    ])]))>
     {str("Notes")}
+    </div>
     <BlurTextArea
       value={annotation.notes}
+      className=Css.(style([
+        marginBottom(px(16)),
+        padding2(~v=px(8), ~h=px(8)),
+        fontSize(px(20)),
+        fontWeight(`extraLight),
+      ]))
       onChange={notes => onChange({...annotation, notes})}
     />
-    {str("Tags")}
     <TagsEditor
       tags
-      current=annotation.tags
+      current={annotation.tags}
       onCreate=onCreateTag
       onAdd=onAddTag
       onRemove=onRemoveTag
     />
-    <div>
-      {str("Annotations")}
-    </div>
+    <div
+    className=Css.(merge([SharedStyles.label, style([
+      marginBottom(px(8)),
+      marginTop(px(16)),
+    ])]))
+    > {str("Annotations")} </div>
     {annotation.references
      ->List.mapWithIndex((i, ref) =>
          <Reference

@@ -157,19 +157,17 @@ module Selection = {
 
   let expandToEncompass: (. t, Dom.node, Dom.node) => unit = [%bs.raw {|
   function (selection, start, end) {
-    if (start === end) {
-      selection.getRangeAt(0).selectNodeContents(start)
-      return
+    while (end.nodeName !== '#text') {
+      end = end.lastChild
     }
-    let srange = document.createRange()
-    srange.selectNodeContents(start);
-    let erange = document.createRange()
-    erange.selectNodeContents(end);
+    while (start.nodeName !== '#text') {
+      start = start.firstChild
+    }
     selection.setBaseAndExtent(
-      srange.startContainer,
-      srange.startOffset,
-      erange.endContainer,
-      erange.endOffset
+      start,
+      0,
+      end,
+      end.textContent.length
     );
   }
   |}];
