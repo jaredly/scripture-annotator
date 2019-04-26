@@ -28,13 +28,16 @@ let useFromProps = (currentProp, onChange) => {
 
 let useLoading = getter => {
   let (nav, setNav) = useState(None);
-  React.useEffect0(() => {
+  React.useEffect1(() => {
+    if (nav != None) {
+      setNav(None);
+    };
     getter() |> Js.Promise.then_(result => {
       setNav(Some(result));
       Js.Promise.resolve()
     }) |> ignore;
     None
-  });
+  }, [|getter|]);
   nav
 };
 

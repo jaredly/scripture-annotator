@@ -61,17 +61,20 @@ let make =
       ~onCreateTag,
       ~onRemoveTag,
     ) => {
-  <div className=Css.(style([width(px(300)), marginLeft(px(16))]))>
+  <div className=Css.(style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))]))>
     <div className=Css.(style([flexDirection(`row)]))>
       <button
         disabled={!annotation->Types.Annotation.isValid}
         onClick={evt => onSave()}>
         {str("Save")}
       </button>
-      <button onClick={evt => onClear()}> {str("Cancel")} </button>
-      <button onClick={evt => addSelection(false)}>
-        {React.string("Add selection")}
+      <button
+        disabled={!annotation->Types.Annotation.isValid}
+        onClick={evt => {onSave(); onClear()}}>
+        {str("Save & Clear")}
       </button>
+      <button onClick={evt => onClear()}> {str("Cancel")} </button>
+      <button onClick={evt => onClear()}> {str("Delete")} </button>
     </div>
     <div className=Css.(merge([SharedStyles.label, style([
       marginBottom(px(8)),

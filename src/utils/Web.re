@@ -143,7 +143,7 @@ module Selection = {
 
   let findVerse: (. Dom.node) => option(Dom.node) = [%bs.raw {|
   function findVerse(node) {
-    if (node.className === 'verse' && node.id) {
+    if (node.nodeType === 1 && node.hasAttribute('data-aid') && node.id) {
       return node
     }
     const parent = node.parentNode
@@ -174,7 +174,7 @@ module Selection = {
 
   let anchorToIdOffset: (. (Dom.node, int)) => option((string, int)) = [%bs.raw {|
   function getOffset([node, offset]) {
-    if (node.className === 'verse' && node.id) {
+    if (node.nodeType === 1 && node.hasAttribute('data-aid') && node.id) {
       return [node.id, offset]
     }
     const parent = node.parentNode

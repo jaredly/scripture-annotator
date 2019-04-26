@@ -5,7 +5,7 @@ let reduce = (state: Types.state, action) =>
     Database.setItem(Database.annotationDb, current.id, current)->ignore;
     {
       ...state,
-      current: current->Types.Annotation.clear,
+      current,
       Types.annotations:
         state.annotations->Map.String.set(current.id, current),
     };
@@ -109,7 +109,7 @@ let make = (~meta, ~volume, ~content, ~state) => {
       }),
     );
   };
-  <div className=Css.(style([flexDirection(`row)]))>
+  <div className=Css.(style([flexDirection(`row), justifyContent(`center)]))>
     <div
       tabIndex=(-1)
       className=Css.(style([width(px(400)), flexShrink(0)]))

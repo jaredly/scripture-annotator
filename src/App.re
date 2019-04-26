@@ -37,6 +37,8 @@ let getSubitem = (navs, uri) => {
   navs->Array.getBy(item => item##uri == uri);
 };
 
+let navigateTo = (volume, item) => Web.Location.setHash(volume##uri ++ ":" ++ item##uri);
+
 module Volume = {
   [@react.component]
   let make = (~volume) => {
@@ -67,18 +69,110 @@ module Loading = {
   };
 };
 
+module TopNav = {
+  [@react.component]
+  let make = (~nav, ~content) => {
+    let ((opened, text), update) = Hooks.useState((false, ""));
+    let getItems = React.useCallback2(text => {
+      let allItems = nav->Js.Dict.values->Array.map(volume => volume##nav->Array.map(nav => (volume, nav)))
+      ->Array.concatMany;
+      let text = text->Js.String.toLowerCase;
+      allItems->Array.keepMap(((volume, item)) => {
+        let title = Fuzzy.fuzzysearch(text, item##title->Js.String.toLowerCase);
+        // let subtitle = Fuzzy.fuzzysearch(text, item##subtitle->Js.String.toLowerCase);
+        if (title) {
+          Some(Fuzzy.wrap((volume, item), Fuzzy.fuzzyScore(text, item##title)))
+        } else {
+          None
+        }
+      })->Js.Array.sortInPlaceWith(Fuzzy.sort, _)
+      ->Array.map(item => {TagsEditor.contents: item.contents, action: () => {
+        let (volume, item) = item.contents;
+        navigateTo(volume, item)
+      }})
+      ->Array.slice(~offset=0, ~len=30)
+    }, (text, nav));
+
+    <div className=Css.(style([
+      position(`relative),
+      width(px(600)),
+      alignSelf(`center)
+    ]))>
+    <div className=Css.(style([
+      textAlign(`center),
+      fontSize(px(24)),
+      fontWeight(`bold),
+      padding(px(8))
+    ])) onClick={evt => {
+      update((true, text))
+    }}>
+      {React.string(content##title)}
+    </div>
+    {opened
+    ? <TagsEditor.Autocomplete
+      getItems
+      renderItem={((volume, item)) => (
+        <div>
+          {React.string(volume##title ++ " > " ++ item##title)}
+        </div>
+      )}
+      placeholder="Select a chapter / talk / item"
+      autoFocus=true
+      />
+    : React.null}
+    // {opened
+    // ? <div className=Css.(style([
+    //   position(`absolute),
+    //       width(`percent(100.)),
+    //   top(`percent(100.)),
+    //   marginTop(px(8)),
+    //   backgroundColor(white),
+    //   boxShadow(~blur=px(5), hex("ccc")),
+    //   borderRadius(px(3)),
+    //   padding(px(8))
+    // ]))>
+    //   <input
+    //     autoFocus={true}
+    //     value=text
+    //     className=Css.(style([
+    //       // width(`percent(100.)),
+    //       alignSelf(`stretch),
+    //       padding(px(8)),
+    //       fontSize(px(20))
+    //     ]))
+    //     onChange={evt => {
+    //       update((true, evt->ReactEvent.Form.target##value))
+    //     }}
+    //     onBlur={evt => {
+    //       update((false, text))
+    //     }}
+    //     placeholder="Select a chapter / talk / item"
+    //   />
+    // </div>
+    // : React.null}
+    </div>
+  };
+};
+
 module PageWrapper = {
   [@react.component]
-  let make = (~content, ~volume) => {
-    <div>
-      {React.string(content##title)}
-      <Loading
-        fn={() => 
+  let make = (~content, ~volume, ~nav) => {
+    let database = React.useMemo0(() => Database.load());
+    let contentPromise = React.useMemo2(() => {
+      Content.content(volume##item_id, content##subitem_id)
+    }, (volume##item_id, content##subitem_id));
+    let loader = React.useMemo2(() => {
+() => 
           Js.Promise.all2((
-            Content.content(volume##item_id, content##subitem_id),
-            Database.load()
+            contentPromise,
+            database
           ))
-        }
+    }, (database, contentPromise));
+    <div>
+      <TopNav nav content />
+      // {React.string(content##title)}
+      <Loading
+        fn={loader}
         loaded={((data, state)) => <Page meta=content volume content=data state />}
       />
     </div>;
@@ -119,7 +213,7 @@ module App = {
         | None
         | Some(`Home) => <Home nav />
         | Some(`Volume(volume)) => <Volume volume />
-        | Some(`Content(volume, content)) => <PageWrapper content volume />
+        | Some(`Content(volume, content)) => <PageWrapper content volume nav />
         };
       }}
     />;

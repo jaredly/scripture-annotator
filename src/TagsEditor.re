@@ -45,7 +45,7 @@ module Autocomplete = {
     | `Focused(focused) => (text, focused)
     };
   [@react.component]
-  let make = (~getItems, ~renderItem, ~placeholder) => {
+  let make = (~getItems, ~renderItem, ~placeholder, ~autoFocus=?) => {
     let ((newText, selected), dispatch) =
       React.useReducer(reduce, ("", 0));
     let (focused, setFocused) = Hooks.useState(false);
@@ -55,6 +55,7 @@ module Autocomplete = {
       <input
         value=newText
         placeholder
+        ?autoFocus
         onFocus={evt => setFocused(true)}
         onBlur={evt => setFocused(false)}
         onChange={evt => {
@@ -95,6 +96,7 @@ module Autocomplete = {
                  position(`absolute),
                  top(`percent(100.)),
                  maxHeight(px(400)),
+                 overflow(`auto),
                  maxWidth(px(300)),
                  backgroundColor(white),
                  boxShadow(~y=px(2), ~blur=px(5), hex("ccc")),
@@ -106,6 +108,7 @@ module Autocomplete = {
                     key={string_of_int(i)}
                     className=Css.(
                       style([
+                        flexShrink(0),
                         hover([backgroundColor(hex("eee"))]),
                         backgroundColor(
                           i == selected ? hex("eee") : transparent,
