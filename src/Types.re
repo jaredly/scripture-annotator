@@ -79,3 +79,9 @@ type state = {
   tags: Map.String.t(Tag.t),
   current: Annotation.t,
 };
+
+let empty = {
+  annotations: Map.String.empty,
+  tags: Map.String.empty,
+  current: Annotation.empty
+}

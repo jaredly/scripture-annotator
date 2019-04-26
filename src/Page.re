@@ -1,5 +1,6 @@
 let reduce = (state: Types.state, action) =>
   switch (action) {
+  | `Reset(state) => state
   | `Save =>
     let current = state.current->Types.Annotation.prepare;
     Database.setItem(Database.annotationDb, current.id, current)->ignore;
@@ -57,15 +58,15 @@ let positionReference = (ref: Types.reference) => {
 };
 
 [@react.component]
-let make = (~meta, ~volume, ~content, ~state) => {
-  let (state, dispatch) = React.useReducer(reduce, state);
+let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   let (node, setNode) = Hooks.useState(None);
   let positionedAnnotations =
-    React.useMemo3(
+    React.useMemo4(
       () =>
-        if (node == None) {
-          [||];
-        } else {
+        switch (node) {
+        | None => [||]
+        | Some(node) =>
+          let offset = node->Web.offsetParent->Web.getBoundingClientRect;
           state.annotations
           ->Map.String.set(state.current.id, state.current)
           ->Map.String.valuesToArray
@@ -81,12 +82,12 @@ let make = (~meta, ~volume, ~content, ~state) => {
                     let%Lets.Opt () = ref.uri == meta##uri ? Some() : None;
                     let%Lets.Opt rect = positionReference(ref);
                     Js.log2(ref, rect);
-                    Some((rect##top, rect##height, ref));
+                    Some((rect##top -. offset##top, rect##height, ref));
                   });
               relevant == [||] ? None : Some((ann, relevant));
             });
         },
-      (node, state.annotations, state.current),
+      (node, state.annotations, state.current, meta##uri),
     );
 
   let addSelection = fullVerses => {
@@ -111,84 +112,92 @@ let make = (~meta, ~volume, ~content, ~state) => {
   };
   <div
     className=Css.(
-      style([flex(1), flexDirection(`row), justifyContent(`center)])
+      style([
+        flex(1),
+        flexDirection(`row),
+        justifyContent(`center),
+      ])
     )>
-    <div
-      tabIndex=(-1)
-      className=Css.(
-        style([
-          width(px(400)),
-          padding(px(32)),
-          flexShrink(0),
-          overflow(`auto),
-          selector(
-            " > :last-child",
-            [marginBottom(px(400)), flexShrink(0)],
-          ),
-        ])
-      )
-      onMouseDown={evt =>
-        if (ReactEvent.Mouse.metaKey(evt)) {
-          addSelection(false);
+    <div className=Css.(style([overflow(`auto), flexShrink(0),
+        position(`relative),
+        flexDirection(`row)
+    ]))>
+      <div
+        tabIndex=(-1)
+        className=Css.(
+          style([
+            width(px(400)),
+            padding(px(32)),
+            selector(
+              " > :last-child",
+              [marginBottom(px(400)), flexShrink(0)],
+            ),
+          ])
+        )
+        onMouseDown={evt =>
+          if (ReactEvent.Mouse.metaKey(evt)) {
+            addSelection(false);
+          }
         }
-      }
-      onKeyDown={evt =>
-        if (ReactEvent.Keyboard.key(evt) == "Enter") {
-          addSelection(evt->ReactEvent.Keyboard.shiftKey);
+        onKeyDown={evt =>
+          if (ReactEvent.Keyboard.key(evt) == "Enter") {
+            addSelection(evt->ReactEvent.Keyboard.shiftKey);
+          }
         }
-      }
-      dangerouslySetInnerHTML={"__html": content##content}
-      ref={ReactDOMRe.Ref.callbackDomRef(node =>
-        setNode(node->Js.Nullable.toOption)
-      )}
-    />
-    <div
-      className=Css.(
-        style([
-          minWidth(px(50)),
-          marginLeft(px(10)),
-          flexDirection(`row),
-        ])
-      )>
-      {positionedAnnotations
-       ->Array.mapWithIndex((i, (ann, references)) =>
-           <div
-             onClick={evt => dispatch(`Select(ann.id))}
-             key={string_of_int(i)}
-             className=Css.(
-               style([
-                 width(px(10)),
-                 cursor(`pointer),
-                 hover([
-                   selector(" > div", [outline(px(1), `solid, black)]),
-                 ]),
-               ])
-             )>
-             {references
-              ->Array.mapWithIndex((i, (top, height, ref)) =>
-                  <div
-                    key={Js.Int.toString(i)}
-                    className=Css.(
-                      style([
-                        backgroundColor(rgba(255, 0, 0, 0.3)),
-                        width(px(10)),
-                        position(`absolute),
-                      ])
-                    )
-                    style={ReactDOMRe.Style.make(
-                      ~top=Js.Float.toString(top) ++ "px",
-                      // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
-                      ~height=Js.Float.toString(height) ++ "px",
-                      ~outline=
-                        ann.id == state.current.id ? "1px solid black" : "",
-                      (),
-                    )}
-                  />
-                )
-              ->React.array}
-           </div>
-         )
-       ->React.array}
+        dangerouslySetInnerHTML={"__html": content##content}
+        ref={ReactDOMRe.Ref.callbackDomRef(node =>
+          setNode(node->Js.Nullable.toOption)
+        )}
+      />
+      <div
+        className=Css.(
+          style([
+            minWidth(px(50)),
+            marginLeft(px(10)),
+            flexDirection(`row),
+            position(`relative),
+          ])
+        )>
+        {positionedAnnotations
+         ->Array.mapWithIndex((i, (ann, references)) =>
+             <div
+               onClick={evt => dispatch(`Select(ann.id))}
+               key={string_of_int(i)}
+               className=Css.(
+                 style([
+                   width(px(10)),
+                   cursor(`pointer),
+                   hover([
+                     selector(" > div", [outline(px(1), `solid, black)]),
+                   ]),
+                 ])
+               )>
+               {references
+                ->Array.mapWithIndex((i, (top, height, ref)) =>
+                    <div
+                      key={Js.Int.toString(i)}
+                      className=Css.(
+                        style([
+                          backgroundColor(rgba(255, 0, 0, 0.3)),
+                          width(px(10)),
+                          position(`absolute),
+                        ])
+                      )
+                      style={ReactDOMRe.Style.make(
+                        ~top=Js.Float.toString(top) ++ "px",
+                        // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
+                        ~height=Js.Float.toString(height) ++ "px",
+                        ~outline=
+                          ann.id == state.current.id ? "1px solid black" : "",
+                        (),
+                      )}
+                    />
+                  )
+                ->React.array}
+             </div>
+           )
+         ->React.array}
+      </div>
     </div>
     <AnnotationEditor
       state

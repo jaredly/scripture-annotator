@@ -14,10 +14,11 @@ type response = {."headers": headers, "status": int};
 
 type window;
 [@bs.val] external window: window = "";
-[@bs.val] external document: Dom.node = "";
+[@bs.val] external document: Dom.element = "";
 [@bs.send] external addEventListener: (window, string, ('event) => unit, bool) => unit = "";
 [@bs.send] external removeEventListener: (window, string, ('event) => unit, bool) => unit = "";
-[@bs.send] external getElementById: (Dom.node, string) => option(Dom.node) = "";
+[@bs.send] external getElementById: (Dom.element, string) => option(Dom.element) = "";
+[@bs.get] external offsetParent: Dom.element => Dom.element = "";
 type rect = {
   .
   "top": float,
@@ -27,15 +28,15 @@ type rect = {
   "bottom": float,
   "right": float,
 };
-[@bs.send] external getBoundingClientRect: Dom.node => rect = "";
+[@bs.send] external getBoundingClientRect: Dom.element => rect = "";
 
 module Range = {
   type t;
-  [@bs.send] external createRange: Dom.node => t = "";
+  [@bs.send] external createRange: Dom.element => t = "";
   let createRange = () => document->createRange;
-  [@bs.send] external setStart: (t, Dom.node, int) => unit = "";
+  [@bs.send] external setStart: (t, Dom.element, int) => unit = "";
   let setStart = (t, (node, off)) => setStart(t, node, off);
-  [@bs.send] external setEnd: (t, Dom.node, int) => unit = "";
+  [@bs.send] external setEnd: (t, Dom.element, int) => unit = "";
   let setEnd = (t, (node, off)) => setEnd(t, node, off);
   [@bs.send] external getBoundingClientRect: t => rect = "";
   [@bs.send] external collapse: (t, ~toStart: bool) => unit = "";
@@ -47,9 +48,9 @@ module Range = {
   }
   |}];
 
-  [@bs.get] external startContainer: t => Dom.node = "";
+  [@bs.get] external startContainer: t => Dom.element = "";
   [@bs.get] external startOffset: t => int = "";
-  [@bs.get] external endContainer: t => Dom.node = "";
+  [@bs.get] external endContainer: t => Dom.element = "";
   [@bs.get] external endOffset: t => int = "";
   let start = r => (r->startContainer, r->startOffset);
   let end_ = r => (r->endContainer, r->endOffset);
@@ -60,12 +61,12 @@ module Selection = {
   [@bs.val] external getSelection: window => t = "";
   let current = () => window->getSelection;
 
-  [@bs.get] external anchorNode: t => Dom.node = "";
+  [@bs.get] external anchorNode: t => Dom.element = "";
   [@bs.get] external anchorOffset: t => int = "";
-  [@bs.get] external extentNode: t => Dom.node = "";
+  [@bs.get] external extentNode: t => Dom.element = "";
   [@bs.get] external extentOffset: t => int = "";
   [@bs.send] external toString: t => string = "";
-  [@bs.send] external setBaseAndExtent: (t, Dom.node, int, Dom.node, int) => unit = "";
+  [@bs.send] external setBaseAndExtent: (t, Dom.element, int, Dom.element, int) => unit = "";
 
   [@bs.send] external getRangeAt: (t, int) => Range.t = "";
   let getRange = t => getRangeAt(t, 0);
@@ -73,7 +74,7 @@ module Selection = {
   let anchor = selection => (selection->anchorNode, selection->anchorOffset);
   let extent = selection => (selection->extentNode, selection->extentOffset);
 
-  let idOffsetToAnchor: (. Dom.node, int) => option((Dom.node, int)) = [%bs.raw {|
+  let idOffsetToAnchor: (. Dom.element, int) => option((Dom.element, int)) = [%bs.raw {|
     function idOffsetToAnchor(node, offset) {
       // console.log("Looking", node, offset)
       if (node.nodeName === '#text') {
@@ -105,7 +106,7 @@ module Selection = {
     selection->setBaseAndExtent(anchor, aoff, extent, eoff);
   };
 
-  let adjustForWordBoundaries: (. (Dom.node, int), bool) => (Dom.node, int) = [%bs.raw {|
+  let adjustForWordBoundaries: (. (Dom.element, int), bool) => (Dom.element, int) = [%bs.raw {|
   function ([node, offset], back) {
     const text = node.textContent
     // console.log('checking', back, text.slice(0, offset), text.slice(offset))
@@ -141,7 +142,7 @@ module Selection = {
     );
   };
 
-  let findVerse: (. Dom.node) => option(Dom.node) = [%bs.raw {|
+  let findVerse: (. Dom.element) => option(Dom.element) = [%bs.raw {|
   function findVerse(node) {
     if (node.nodeType === 1 && node.hasAttribute('data-aid') && node.id) {
       return node
@@ -155,7 +156,7 @@ module Selection = {
   |}];
   let findVerse = m => findVerse(. m);
 
-  let expandToEncompass: (. t, Dom.node, Dom.node) => unit = [%bs.raw {|
+  let expandToEncompass: (. t, Dom.element, Dom.element) => unit = [%bs.raw {|
   function (selection, start, end) {
     while (end.nodeName !== '#text') {
       end = end.lastChild
@@ -172,7 +173,7 @@ module Selection = {
   }
   |}];
 
-  let anchorToIdOffset: (. (Dom.node, int)) => option((string, int)) = [%bs.raw {|
+  let anchorToIdOffset: (. (Dom.element, int)) => option((string, int)) = [%bs.raw {|
   function getOffset([node, offset]) {
     if (node.nodeType === 1 && node.hasAttribute('data-aid') && node.id) {
       return [node.id, offset]

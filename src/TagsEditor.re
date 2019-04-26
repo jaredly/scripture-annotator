@@ -95,6 +95,7 @@ module Autocomplete = {
                style([
                  position(`absolute),
                  top(`percent(100.)),
+                 zIndex(100),
                  maxHeight(px(400)),
                  overflow(`auto),
                  maxWidth(px(300)),
