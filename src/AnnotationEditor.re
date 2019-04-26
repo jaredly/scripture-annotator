@@ -63,6 +63,11 @@ let make =
       ~onRemoveTag,
     ) => {
   <div className=Css.(style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))]))>
+    <div className=Css.(merge([SharedStyles.smallHeader, style([
+      marginBottom(px(16))
+    ])]))>
+      {React.string(annotation.id != "" ? "Update entry" : "Add entry")}
+    </div>
     <div className=Css.(style([flexDirection(`row)]))>
       <button
         disabled={!annotation->Types.Annotation.isValid}
@@ -75,7 +80,9 @@ let make =
         {str("Save & Clear")}
       </button>
       <button onClick={evt => onClear()}> {str("Cancel")} </button>
-      <button onClick={evt => onDelete()}> {str("Delete")} </button>
+      <button
+      disabled={annotation.id == ""}
+      onClick={evt => onDelete()}> {str("Delete")} </button>
     </div>
     <div className=Css.(merge([SharedStyles.label, style([
       marginBottom(px(8)),

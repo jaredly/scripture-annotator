@@ -8,11 +8,18 @@ module Styles = {
     style([flexDirection(`row), padding2(~v=px(8), ~h=`zero), flexWrap(`wrap)]);
   let tag =
     style([
+      flexDirection(`row),
       padding2(~v=px(4), ~h=px(8)),
       borderRadius(px(4)),
       marginRight(px(8)),
       marginBottom(px(4)),
     ]);
+  let closeButton = style([
+    borderStyle(`none),
+    cursor(`pointer),
+    backgroundColor(`transparent),
+    marginRight(px(-4))
+  ])
 };
 
 type autocomplete('contents) = {
@@ -175,6 +182,12 @@ let make =
                  key={tag.id}
                  style={ReactDOMRe.Style.make(~backgroundColor=tag.color, ())}>
                  {React.string(tag.name)}
+                 <button
+                  onClick={evt => onRemove(tag.id)}
+                  className=Styles.closeButton
+                  >
+                    {React.string("x")}
+                  </button>
                </div>;
              })
            ->React.array}
