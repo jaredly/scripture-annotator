@@ -125,6 +125,10 @@ module Opt = {
     | None => Result.Error(error)
     };
   let flatMap = let_;
+  let or_ = (value, default) => switch value {
+    | None => default
+    | Some(x) => x
+  }
 };
 
 module OptIf = {
