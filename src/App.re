@@ -218,7 +218,13 @@ module PageWrapper = {
         ((), ()) => Js.Promise.all2((contentPromise, database)),
         (database, contentPromise),
       );
-    <div>
+    <div className=Css.(style([
+      position(`absolute),
+      top(`zero),
+      right(`zero),
+      left(`zero),
+      bottom(`zero),
+    ]))>
       <TopNav nav volume content />
       // {React.string(content##title)}
       <Loading

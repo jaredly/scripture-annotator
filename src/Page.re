@@ -109,10 +109,24 @@ let make = (~meta, ~volume, ~content, ~state) => {
       }),
     );
   };
-  <div className=Css.(style([flexDirection(`row), justifyContent(`center)]))>
+  <div
+    className=Css.(
+      style([flex(1), flexDirection(`row), justifyContent(`center)])
+    )>
     <div
       tabIndex=(-1)
-      className=Css.(style([width(px(400)), flexShrink(0)]))
+      className=Css.(
+        style([
+          width(px(400)),
+          padding(px(32)),
+          flexShrink(0),
+          overflow(`auto),
+          selector(
+            " > :last-child",
+            [marginBottom(px(400)), flexShrink(0)],
+          ),
+        ])
+      )
       onMouseDown={evt =>
         if (ReactEvent.Mouse.metaKey(evt)) {
           addSelection(false);

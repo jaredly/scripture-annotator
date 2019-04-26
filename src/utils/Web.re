@@ -108,18 +108,18 @@ module Selection = {
   let adjustForWordBoundaries: (. (Dom.node, int), bool) => (Dom.node, int) = [%bs.raw {|
   function ([node, offset], back) {
     const text = node.textContent
-    console.log('checking', back, text.slice(0, offset), text.slice(offset))
+    // console.log('checking', back, text.slice(0, offset), text.slice(offset))
     if (back) {
       const before = text.slice(0, offset).match(/\w+$/)
       if (before) {
-        console.log(before)
+        // console.log(before)
         offset -= before[0].length
       }
       return [node, offset]
     } else {
       const after = text.slice(offset).match(/^\w+/)
       if (after) {
-        console.log(after)
+        // console.log(after)
         offset += after[0].length
       }
       return [node, offset]
