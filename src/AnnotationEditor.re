@@ -55,6 +55,7 @@ let make =
       ~onChange,
       ~state as {Types.annotations, tags, current as annotation},
       ~onSave,
+      ~onDelete,
       ~addSelection,
       ~onClear,
       ~onAddTag,
@@ -74,7 +75,7 @@ let make =
         {str("Save & Clear")}
       </button>
       <button onClick={evt => onClear()}> {str("Cancel")} </button>
-      <button onClick={evt => onClear()}> {str("Delete")} </button>
+      <button onClick={evt => onDelete()}> {str("Delete")} </button>
     </div>
     <div className=Css.(merge([SharedStyles.label, style([
       marginBottom(px(8)),

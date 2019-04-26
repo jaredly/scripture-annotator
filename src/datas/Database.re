@@ -11,6 +11,9 @@ external setItem: (_localforage, string, 'v) => Js.Promise.t(unit) = "";
 
 [@bs.send] external getItem: (_localforage, string) => Js.Promise.t('v) = "";
 
+[@bs.send] external removeItem: (_localforage, string) => Js.Promise.t(unit) = "";
+let removeItem = ((l, _, _), id) => removeItem(l, id);
+
 type localforage('t) = (
   _localforage,
   't => Js.Json.t,

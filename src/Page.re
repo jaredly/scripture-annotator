@@ -11,6 +11,9 @@ let reduce = (state: Types.state, action) =>
         state.annotations->Map.String.set(current.id, current),
     };
   | `Clear => {...state, current: state.current->Types.Annotation.clear}
+  | `Delete =>
+    Database.removeItem(Database.annotationDb, state.current.id)->ignore;
+    {...state, current: state.current->Types.Annotation.clear, annotations: state.annotations->Map.String.remove(state.current.id)}
   | `Update(current) => {...state, current}
   | `Select(id) =>
     switch (state.annotations->Map.String.get(id)) {
@@ -60,6 +63,13 @@ let positionReference = (ref: Types.reference) => {
 [@react.component]
 let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   let (node, setNode) = Hooks.useState(None);
+  let (delayedMeta, setDelayedMeta) = Hooks.useState(meta);
+  React.useLayoutEffect1(() => {
+    Js.Global.setTimeout(() => {
+      setDelayedMeta(meta);
+    }, 50)->ignore;
+    None
+  }, [|meta|]);
   let positionedAnnotations =
     React.useMemo4(
       () =>
@@ -81,13 +91,13 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                 ->Array.keepMap(ref => {
                     let%Lets.Opt () = ref.uri == meta##uri ? Some() : None;
                     let%Lets.Opt rect = positionReference(ref);
-                    Js.log2(ref, rect);
+                    // Js.log2(ref, rect);
                     Some((rect##top -. offset##top, rect##height, ref));
                   });
               relevant == [||] ? None : Some((ann, relevant));
             });
         },
-      (node, state.annotations, state.current, meta##uri),
+      (node, state.annotations, state.current, delayedMeta),
     );
 
   let addSelection = fullVerses => {
@@ -124,6 +134,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
     ]))>
       <div
         tabIndex=(-1)
+        key={meta##uri}
         className=Css.(
           style([
             width(px(400)),
@@ -145,8 +156,10 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
           }
         }
         dangerouslySetInnerHTML={"__html": content##content}
-        ref={ReactDOMRe.Ref.callbackDomRef(node =>
+        ref={ReactDOMRe.Ref.callbackDomRef(node => {
+          // Js.log2("Setting ref", node);
           setNode(node->Js.Nullable.toOption)
+        }
         )}
       />
       <div
@@ -205,6 +218,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
       addSelection
       onChange={annotation => dispatch(`Update(annotation))}
       onClear={annotation => dispatch(`Clear)}
+      onDelete={annotation => dispatch(`Delete)}
       onSave={annotation => dispatch(`Save)}
       onAddTag={id => dispatch(`AddTag(id))}
       onCreateTag={name => dispatch(`CreateTag(name))}
