@@ -92,7 +92,7 @@ let positionAnnotations =
 };
 
 [@react.component]
-let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
+let make = (~meta, ~volume as _, ~content, ~state: Types.state, ~dispatch) => {
   let (node, setNode) = Hooks.useState(None);
   let annotationContainer = React.useRef(Js.Nullable.null);
   let (delayedMeta, setDelayedMeta) = Hooks.useState(meta);

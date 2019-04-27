@@ -82,7 +82,9 @@ let make = (~nav, ~volume, ~content) => {
            {React.string("<")}
          </button>
        }}
-      {React.string(content##title)}
+      <div className=Css.(style([margin2(~v=`zero, ~h=px(16))]))>
+        {React.string(content##title)}
+      </div>
       {switch (next) {
        | None => React.null
        | Some(next) =>

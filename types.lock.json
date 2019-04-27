@@ -4,6 +4,17 @@
     {
       "entries": [
         {
+          "moduleName": "Settings",
+          "modulePath": [],
+          "engines": [
+            [
+              ["Js.Json"],
+              1
+            ]
+          ],
+          "name": "settings"
+        },
+        {
           "moduleName": "Types",
           "modulePath": ["Annotation"],
           "engines": [
@@ -27,6 +38,156 @@
         }
       ],
       "typeMap": [
+        [
+          [
+            "Settings",
+            [],
+            "bookmark"
+          ],
+          [
+            [],
+            {
+              "name": "bookmark",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "uri",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "scroll",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "date",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "name",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Settings",
+            [],
+            "settings"
+          ],
+          [
+            [],
+            {
+              "name": "settings",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "lastUsedTags",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "list"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "string"
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "history",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "array"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Public",
+                            [
+                              "Settings",
+                              [],
+                              "bookmark"
+                            ]
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "bookmarks",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "array"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Public",
+                            [
+                              "Settings",
+                              [],
+                              "bookmark"
+                            ]
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
         [
           [
             "Types",

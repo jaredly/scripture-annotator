@@ -8,6 +8,10 @@
   },
   "entries": [
     {
+      "file": "src/Settings.re",
+      "type": "settings"
+    },
+    {
       "file": "src/Types.re",
       "type": "Annotation.t",
       "publicName": "annotation"
