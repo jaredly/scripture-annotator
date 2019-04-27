@@ -63,6 +63,7 @@ let positionReference = (ref: Types.reference) => {
 [@react.component]
 let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   let (node, setNode) = Hooks.useState(None);
+  let annotationContainer = React.useRef(Js.Nullable.null);
   let (delayedMeta, setDelayedMeta) = Hooks.useState(meta);
   React.useLayoutEffect1(() => {
     Js.Global.setTimeout(() => {
@@ -73,10 +74,13 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   let positionedAnnotations =
     React.useMemo4(
       () =>
-        switch (node) {
-        | None => [||]
-        | Some(node) =>
-          let offset = node->Web.offsetParent->Web.getBoundingClientRect;
+        switch (node, annotationContainer->React.Ref.current->Js.Nullable.toOption) {
+        | (None, _) | (_, None) => [||]
+        | (Some(node), Some(container)) =>
+          // let offsetParent = 
+          let offset = container->Web.getBoundingClientRect;
+          // let offsetTop = 
+          // Js.log3("Offset", node->Web.offsetParent, offset##top);
           state.annotations
           ->Map.String.set(state.current.id, state.current)
           ->Map.String.valuesToArray
@@ -163,6 +167,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
         )}
       />
       <div
+        ref={ReactDOMRe.Ref.domRef(annotationContainer)}
         className=Css.(
           style([
             minWidth(px(50)),
@@ -172,13 +177,26 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
           ])
         )>
         {positionedAnnotations
-         ->Array.mapWithIndex((i, (ann, references)) =>
+         ->Array.mapWithIndex((i, (ann, references)) => {
+              let tags = ann.tags->List.keepMap(tid => {
+                state.tags->Map.String.get(tid)
+              });
+              let tagColors = tags->List.map(tag => tag.color);
+              let styleColor = color => ReactDOMRe.Style.make(
+                ~backgroundColor=color,
+                ()
+              );
+              let tagColor = switch tagColors {
+                | [color, ..._] => color
+                | [] => "red"
+              };
              <div
                onClick={evt => dispatch(`Select(ann.id))}
                key={string_of_int(i)}
                className=Css.(
                  style([
                    width(px(10)),
+                   marginLeft(px(2)),
                    cursor(`pointer),
                    hover([
                      selector(" > div", [outline(px(1), `solid, black)]),
@@ -186,7 +204,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                  ])
                )>
                {references
-                ->Array.mapWithIndex((i, (top, height, ref)) =>
+                ->Array.mapWithIndex((i, (top, height, ref)) => {
                     <div
                       key={Js.Int.toString(i)}
                       className=Css.(
@@ -200,14 +218,17 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                         ~top=Js.Float.toString(top) ++ "px",
                         // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
                         ~height=Js.Float.toString(height) ++ "px",
+                        ~backgroundColor=tagColor,
                         ~outline=
                           ann.id == state.current.id ? "1px solid black" : "",
                         (),
                       )}
                     />
+                }
                   )
                 ->React.array}
              </div>
+         }
            )
          ->React.array}
       </div>

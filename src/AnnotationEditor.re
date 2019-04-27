@@ -13,6 +13,7 @@ module Reference = {
         Web.Selection.current()->Web.Selection.fromIdOffset(start, stop)
       }
       className=Css.(style([marginBottom(px(16)),
+      flexShrink(0),
       boxShadow(~blur=px(3), hex("ccc")),
       padding(px(8)),
       ]))>
@@ -113,6 +114,11 @@ let make =
       marginTop(px(16)),
     ])]))
     > {str("Annotations")} </div>
+    <div className=Css.(style([
+      flex(1),
+      padding(px(4)),
+      overflow(`auto)
+    ]))>
     {annotation.references
      ->List.mapWithIndex((i, ref) =>
          <Reference
@@ -128,5 +134,6 @@ let make =
        )
      ->List.toArray
      ->React.array}
+    </div>
   </div>;
 };
