@@ -13,7 +13,11 @@ let reduce = (state: Types.state, action) =>
   | `Clear => {...state, current: state.current->Types.Annotation.clear}
   | `Delete =>
     Database.removeItem(Database.annotationDb, state.current.id)->ignore;
-    {...state, current: state.current->Types.Annotation.clear, annotations: state.annotations->Map.String.remove(state.current.id)}
+    {
+      ...state,
+      current: state.current->Types.Annotation.clear,
+      annotations: state.annotations->Map.String.remove(state.current.id),
+    };
   | `Update(current) => {...state, current}
   | `Select(id) =>
     switch (state.annotations->Map.String.get(id)) {
@@ -27,12 +31,9 @@ let reduce = (state: Types.state, action) =>
         tags: state.current.tags->List.keep(t => t != id),
       },
     }
-  | `ChangeTag(tag: Types.Tag.t) =>
+  | `ChangeTag((tag: Types.Tag.t)) =>
     Database.tagsDb->Database.setItem(tag.id, tag)->ignore;
-    {
-      ...state,
-      tags: state.tags->Map.String.set(tag.id, tag),
-    };
+    {...state, tags: state.tags->Map.String.set(tag.id, tag)};
   | `AddTag(id) => {
       ...state,
       current: {
@@ -71,21 +72,26 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   let (node, setNode) = Hooks.useState(None);
   let annotationContainer = React.useRef(Js.Nullable.null);
   let (delayedMeta, setDelayedMeta) = Hooks.useState(meta);
-  React.useLayoutEffect1(() => {
-    Js.Global.setTimeout(() => {
-      setDelayedMeta(meta);
-    }, 50)->ignore;
-    None
-  }, [|meta|]);
+  React.useLayoutEffect1(
+    () => {
+      Js.Global.setTimeout(() => setDelayedMeta(meta), 50)->ignore;
+      None;
+    },
+    [|meta|],
+  );
   let positionedAnnotations =
     React.useMemo4(
       () =>
-        switch (node, annotationContainer->React.Ref.current->Js.Nullable.toOption) {
-        | (None, _) | (_, None) => [||]
+        switch (
+          node,
+          annotationContainer->React.Ref.current->Js.Nullable.toOption,
+        ) {
+        | (None, _)
+        | (_, None) => [||]
         | (Some(node), Some(container)) =>
-          // let offsetParent = 
+          // let offsetParent =
           let offset = container->Web.getBoundingClientRect;
-          // let offsetTop = 
+          // let offsetTop =
           // Js.log3("Offset", node->Web.offsetParent, offset##top);
           state.annotations
           ->Map.String.set(state.current.id, state.current)
@@ -132,21 +138,30 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
   };
   <div
     className=Css.(
-      style([
-        flex(1),
-        flexDirection(`row),
-        justifyContent(`center),
-      ])
+      style([flex(1), flexDirection(`row), justifyContent(`center)])
     )>
-    <div className=Css.(style([overflow(`auto), flexShrink(0),
-        position(`relative),
-        flexDirection(`row)
-    ]))>
+    <div
+      className=Css.(
+        style([
+          overflow(`auto),
+          flexShrink(0),
+          position(`relative),
+          flexDirection(`row),
+        ])
+      )
+      tabIndex=(-1)
+      onKeyDown={evt =>
+        if (ReactEvent.Keyboard.key(evt) == "Enter") {
+          addSelection(evt->ReactEvent.Keyboard.shiftKey);
+        }
+      }>
       <div
-        tabIndex=(-1)
         key={meta##uri}
         className=Css.(
           style([
+            // focus([
+            //   outlineStyle(`none)
+            // ]),
             width(px(400)),
             padding(px(32)),
             selector(
@@ -160,16 +175,10 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
             addSelection(false);
           }
         }
-        onKeyDown={evt =>
-          if (ReactEvent.Keyboard.key(evt) == "Enter") {
-            addSelection(evt->ReactEvent.Keyboard.shiftKey);
-          }
-        }
         dangerouslySetInnerHTML={"__html": content##content}
-        ref={ReactDOMRe.Ref.callbackDomRef(node => {
+        ref={ReactDOMRe.Ref.callbackDomRef(node =>
           // Js.log2("Setting ref", node);
           setNode(node->Js.Nullable.toOption)
-        }
         )}
       />
       <div
@@ -178,24 +187,23 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
           style([
             minWidth(px(50)),
             marginLeft(px(10)),
+            marginRight(px(20)),
             flexDirection(`row),
             position(`relative),
           ])
         )>
         {positionedAnnotations
          ->Array.mapWithIndex((i, (ann, references)) => {
-              let tags = ann.tags->List.keepMap(tid => {
-                state.tags->Map.String.get(tid)
-              });
-              let tagColors = tags->List.map(tag => tag.color);
-              let styleColor = color => ReactDOMRe.Style.make(
-                ~backgroundColor=color,
-                ()
-              );
-              let tagColor = switch tagColors {
-                | [color, ..._] => color
-                | [] => "red"
-              };
+             let tags =
+               ann.tags->List.keepMap(tid => state.tags->Map.String.get(tid));
+             let tagColors = tags->List.map(tag => tag.color);
+             let styleColor = color =>
+               ReactDOMRe.Style.make(~backgroundColor=color, ());
+             let tagColor =
+               switch (tagColors) {
+               | [color, ..._] => color
+               | [] => "red"
+               };
              <div
                onClick={evt => dispatch(`Select(ann.id))}
                key={string_of_int(i)}
@@ -210,7 +218,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                  ])
                )>
                {references
-                ->Array.mapWithIndex((i, (top, height, ref)) => {
+                ->Array.mapWithIndex((i, (top, height, ref)) =>
                     <div
                       key={Js.Int.toString(i)}
                       className=Css.(
@@ -230,12 +238,10 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                         (),
                       )}
                     />
-                }
                   )
                 ->React.array}
-             </div>
-         }
-           )
+             </div>;
+           })
          ->React.array}
       </div>
     </div>

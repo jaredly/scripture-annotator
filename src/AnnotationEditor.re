@@ -64,6 +64,10 @@ let make =
       ~onChangeTag,
       ~onRemoveTag,
     ) => {
+  let changed = switch (annotations->Map.String.get(current.id)) {
+    | None => true
+    | Some(orig) => annotation != orig
+  };
   <div className=Css.(style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))]))>
     <div className=Css.(merge([SharedStyles.smallHeader, style([
       marginBottom(px(16))
@@ -72,12 +76,12 @@ let make =
     </div>
     <div className=Css.(style([flexDirection(`row)]))>
       <button
-        disabled={!annotation->Types.Annotation.isValid}
+        disabled={!annotation->Types.Annotation.isValid || !changed}
         onClick={evt => onSave()}>
         {str("Save")}
       </button>
       <button
-        disabled={!annotation->Types.Annotation.isValid}
+        disabled={!annotation->Types.Annotation.isValid || !changed}
         onClick={evt => {onSave(); onClear()}}>
         {str("Save & Clear")}
       </button>
