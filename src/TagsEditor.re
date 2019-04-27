@@ -150,8 +150,7 @@ module TagEditor = {
             padding(px(8)),
             borderRadius(px(4)),
           ])
-        )
-      >
+        )>
         <BlurInput
           value={tag.name}
           onChange={name => update({...tag, name})}
@@ -160,17 +159,10 @@ module TagEditor = {
           value={tag.color}
           onChange={color => update({...tag, color})}
         />
-        <button
-          disabled={tag == orig}
-          onClick={evt => onSave(tag)}
-        >
+        <button disabled={tag == orig} onClick={evt => onSave(tag)}>
           {React.string("Save")}
         </button>
-        <button
-          onClick={evt => onClose()}
-        >
-          {React.string("Close")}
-        </button>
+        <button onClick={evt => onClose()}> {React.string("Close")} </button>
       </div>
     </Modal>;
   };
@@ -231,16 +223,14 @@ let make =
                <div
                  className=Styles.tag
                  key={tag.id}
-                 onClick={_evt => {
-                   setEditingTag(Some(tag))
-                 }}
+                 onClick={_evt => setEditingTag(Some(tag))}
                  style={ReactDOMRe.Style.make(~backgroundColor=tag.color, ())}>
                  {React.string(tag.name)}
                  <button
                    onClick={evt => {
                      evt->ReactEvent.Mouse.stopPropagation;
-                     onRemove(tag.id)
-                    }}
+                     onRemove(tag.id);
+                   }}
                    className=Styles.closeButton>
                    {React.string("x")}
                  </button>

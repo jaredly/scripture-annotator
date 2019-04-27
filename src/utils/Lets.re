@@ -1,11 +1,13 @@
 module Async = {
   type t('a) = Js.Promise.t('a);
-  let try_ = (promise, continuation) => Js.Promise.catch(continuation, promise);
+  let try_ = (promise, continuation) =>
+    Js.Promise.catch(continuation, promise);
   let let_ = (promise, continuation) =>
     Js.Promise.then_(continuation, promise);
   let resolve = Js.Promise.resolve;
   let reject = Js.Promise.reject;
-  let map = (promise, fn) => Js.Promise.then_(v => Js.Promise.resolve(fn(v)), promise);
+  let map = (promise, fn) =>
+    Js.Promise.then_(v => Js.Promise.resolve(fn(v)), promise);
 
   let orNone = prom => {
     prom
@@ -125,10 +127,11 @@ module Opt = {
     | None => Result.Error(error)
     };
   let flatMap = let_;
-  let or_ = (value, default) => switch value {
+  let or_ = (value, default) =>
+    switch (value) {
     | None => default
     | Some(x) => x
-  }
+    };
 };
 
 module OptIf = {

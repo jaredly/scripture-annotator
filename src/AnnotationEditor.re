@@ -12,12 +12,18 @@ module Reference = {
       onClick={_evt =>
         Web.Selection.current()->Web.Selection.fromIdOffset(start, stop)
       }
-      className=Css.(style([marginBottom(px(16)),
-      flexShrink(0),
-      boxShadow(~blur=px(3), hex("ccc")),
-      padding(px(8)),
-      ]))>
-      <div className=Css.(style([flexDirection(`row), justifyContent(`spaceBetween)]))>
+      className=Css.(
+        style([
+          marginBottom(px(16)),
+          flexShrink(0),
+          boxShadow(~blur=px(3), hex("ccc")),
+          padding(px(8)),
+        ])
+      )>
+      <div
+        className=Css.(
+          style([flexDirection(`row), justifyContent(`spaceBetween)])
+        )>
         {React.string(
            {let start = fst(start)
             let end_ = fst(stop)
@@ -64,14 +70,19 @@ let make =
       ~onChangeTag,
       ~onRemoveTag,
     ) => {
-  let changed = switch (annotations->Map.String.get(current.id)) {
+  let changed =
+    switch (annotations->Map.String.get(current.id)) {
     | None => true
     | Some(orig) => annotation != orig
-  };
-  <div className=Css.(style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))]))>
-    <div className=Css.(merge([SharedStyles.smallHeader, style([
-      marginBottom(px(16))
-    ])]))>
+    };
+  <div
+    className=Css.(
+      style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))])
+    )>
+    <div
+      className=Css.(
+        merge([SharedStyles.smallHeader, style([marginBottom(px(16))])])
+      )>
       {React.string(annotation.id != "" ? "Update entry" : "Add entry")}
     </div>
     <div className=Css.(style([flexDirection(`row)]))>
@@ -82,28 +93,36 @@ let make =
       </button>
       <button
         disabled={!annotation->Types.Annotation.isValid || !changed}
-        onClick={evt => {onSave(); onClear()}}>
+        onClick={evt => {
+          onSave();
+          onClear();
+        }}>
         {str("Save & Clear")}
       </button>
       <button onClick={evt => onClear()}> {str("Cancel")} </button>
-      <button
-      disabled={annotation.id == ""}
-      onClick={evt => onDelete()}> {str("Delete")} </button>
+      <button disabled={annotation.id == ""} onClick={evt => onDelete()}>
+        {str("Delete")}
+      </button>
     </div>
-    <div className=Css.(merge([SharedStyles.label, style([
-      marginBottom(px(8)),
-      marginTop(px(16)),
-    ])]))>
-    {str("Notes")}
+    <div
+      className=Css.(
+        merge([
+          SharedStyles.label,
+          style([marginBottom(px(8)), marginTop(px(16))]),
+        ])
+      )>
+      {str("Notes")}
     </div>
     <BlurTextArea
       value={annotation.notes}
-      className=Css.(style([
-        marginBottom(px(16)),
-        padding2(~v=px(8), ~h=px(8)),
-        fontSize(px(20)),
-        fontWeight(`extraLight),
-      ]))
+      className=Css.(
+        style([
+          marginBottom(px(16)),
+          padding2(~v=px(8), ~h=px(8)),
+          fontSize(px(20)),
+          fontWeight(`extraLight),
+        ])
+      )
       onChange={notes => onChange({...annotation, notes})}
     />
     <TagsEditor
@@ -115,31 +134,31 @@ let make =
       onRemove=onRemoveTag
     />
     <div
-    className=Css.(merge([SharedStyles.label, style([
-      marginBottom(px(8)),
-      marginTop(px(16)),
-    ])]))
-    > {str("Annotations")} </div>
-    <div className=Css.(style([
-      flex(1),
-      padding(px(4)),
-      overflow(`auto)
-    ]))>
-    {annotation.references
-     ->List.mapWithIndex((i, ref) =>
-         <Reference
-           reference=ref
-           onRemove={() =>
-             onChange({
-               ...annotation,
-               references: annotation.references->List.keep(r => r != ref),
-             })
-           }
-           key={string_of_int(i)}
-         />
-       )
-     ->List.toArray
-     ->React.array}
+      className=Css.(
+        merge([
+          SharedStyles.label,
+          style([marginBottom(px(8)), marginTop(px(16))]),
+        ])
+      )>
+      {str("Annotations")}
+    </div>
+    <div
+      className=Css.(style([flex(1), padding(px(4)), overflow(`auto)]))>
+      {annotation.references
+       ->List.mapWithIndex((i, ref) =>
+           <Reference
+             reference=ref
+             onRemove={() =>
+               onChange({
+                 ...annotation,
+                 references: annotation.references->List.keep(r => r != ref),
+               })
+             }
+             key={string_of_int(i)}
+           />
+         )
+       ->List.toArray
+       ->React.array}
     </div>
   </div>;
 };
