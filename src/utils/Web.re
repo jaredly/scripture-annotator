@@ -12,9 +12,15 @@ type response = {."headers": headers, "status": int};
 [@bs.val] external fetch: (string, 'config) => Js.Promise.t(response) = "";
 [@bs.send] external json: response => Js.Promise.t('a) = "";
 
+type document;
+[@bs.val] external documentEl: document = "document";
+[@bs.get] external body: document => Dom.element = "";
+[@bs.send] external appendChild: (Dom.element, Dom.element) => unit = "";
+
 type window;
 [@bs.val] external window: window = "";
 [@bs.val] external document: Dom.element = "";
+[@bs.send] external createElement: (Dom.element, string) => Dom.element = "";
 [@bs.send] external addEventListener: (window, string, ('event) => unit, bool) => unit = "";
 [@bs.send] external removeEventListener: (window, string, ('event) => unit, bool) => unit = "";
 [@bs.send] external getElementById: (Dom.element, string) => option(Dom.element) = "";

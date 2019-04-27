@@ -1,11 +1,12 @@
 module Styles = {
   open Css;
-  let noTags = style([
-      fontStyle(`italic),
-      fontSize(`percent(80.))
-    ]);
+  let noTags = style([fontStyle(`italic), fontSize(`percent(80.))]);
   let tags =
-    style([flexDirection(`row), padding2(~v=px(8), ~h=`zero), flexWrap(`wrap)]);
+    style([
+      flexDirection(`row),
+      padding2(~v=px(8), ~h=`zero),
+      flexWrap(`wrap),
+    ]);
   let tag =
     style([
       flexDirection(`row),
@@ -14,12 +15,13 @@ module Styles = {
       marginRight(px(8)),
       marginBottom(px(4)),
     ]);
-  let closeButton = style([
-    borderStyle(`none),
-    cursor(`pointer),
-    backgroundColor(`transparent),
-    marginRight(px(-4))
-  ])
+  let closeButton =
+    style([
+      borderStyle(`none),
+      cursor(`pointer),
+      backgroundColor(`transparent),
+      marginRight(px(-4)),
+    ]);
 };
 
 type autocomplete('contents) = {
@@ -136,15 +138,55 @@ module Autocomplete = {
   };
 };
 
+module TagEditor = {
+  [@react.component]
+  let make = (~tag as orig: Types.Tag.t, ~onClose, ~onSave) => {
+    let (tag, update) = Hooks.useState(orig);
+    <Modal onClose>
+      <div
+        className=Css.(
+          style([
+            backgroundColor(white),
+            padding(px(8)),
+            borderRadius(px(4)),
+          ])
+        )
+      >
+        <BlurInput
+          value={tag.name}
+          onChange={name => update({...tag, name})}
+        />
+        <BlurInput
+          value={tag.color}
+          onChange={color => update({...tag, color})}
+        />
+        <button
+          disabled={tag == orig}
+          onClick={evt => onSave(tag)}
+        >
+          {React.string("Save")}
+        </button>
+        <button
+          onClick={evt => onClose()}
+        >
+          {React.string("Close")}
+        </button>
+      </div>
+    </Modal>;
+  };
+};
+
 [@react.component]
 let make =
     (
       ~tags: Map.String.t(Types.Tag.t),
       ~current,
+      ~onChange,
       ~onCreate,
       ~onAdd,
       ~onRemove,
     ) => {
+  let (editingTag, setEditingTag) = Hooks.useState(None);
   let getItems =
     React.useMemo1(
       ((), newText) =>
@@ -170,6 +212,15 @@ let make =
     );
 
   <div>
+    {switch (editingTag) {
+     | None => React.null
+     | Some(tag) =>
+       <TagEditor
+         tag
+         onClose={() => setEditingTag(None)}
+         onSave={tag => onChange(tag)}
+       />
+     }}
     <div className=Styles.tags>
       {current == []
          ? <div className=Styles.noTags> {React.string("No tags")} </div>
@@ -180,14 +231,19 @@ let make =
                <div
                  className=Styles.tag
                  key={tag.id}
+                 onClick={_evt => {
+                   setEditingTag(Some(tag))
+                 }}
                  style={ReactDOMRe.Style.make(~backgroundColor=tag.color, ())}>
                  {React.string(tag.name)}
                  <button
-                  onClick={evt => onRemove(tag.id)}
-                  className=Styles.closeButton
-                  >
-                    {React.string("x")}
-                  </button>
+                   onClick={evt => {
+                     evt->ReactEvent.Mouse.stopPropagation;
+                     onRemove(tag.id)
+                    }}
+                   className=Styles.closeButton>
+                   {React.string("x")}
+                 </button>
                </div>;
              })
            ->React.array}

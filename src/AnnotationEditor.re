@@ -61,6 +61,7 @@ let make =
       ~onClear,
       ~onAddTag,
       ~onCreateTag,
+      ~onChangeTag,
       ~onRemoveTag,
     ) => {
   <div className=Css.(style([width(px(300)), marginLeft(px(16)), paddingTop(px(16))]))>
@@ -105,6 +106,7 @@ let make =
       tags
       current={annotation.tags}
       onCreate=onCreateTag
+      onChange=onChangeTag
       onAdd=onAddTag
       onRemove=onRemoveTag
     />

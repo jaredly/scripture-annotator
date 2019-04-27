@@ -27,6 +27,12 @@ let reduce = (state: Types.state, action) =>
         tags: state.current.tags->List.keep(t => t != id),
       },
     }
+  | `ChangeTag(tag: Types.Tag.t) =>
+    Database.tagsDb->Database.setItem(tag.id, tag)->ignore;
+    {
+      ...state,
+      tags: state.tags->Map.String.set(tag.id, tag),
+    };
   | `AddTag(id) => {
       ...state,
       current: {
@@ -242,6 +248,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
       onDelete={annotation => dispatch(`Delete)}
       onSave={annotation => dispatch(`Save)}
       onAddTag={id => dispatch(`AddTag(id))}
+      onChangeTag={tag => dispatch(`ChangeTag(tag))}
       onCreateTag={name => dispatch(`CreateTag(name))}
       onRemoveTag={name => dispatch(`RemoveTag(name))}
     />
