@@ -67,6 +67,7 @@ module Selection = {
   [@bs.val] external getSelection: window => t = "";
   let current = () => window->getSelection;
 
+  [@bs.send] external removeAllRanges: t => unit = "";
   [@bs.get] external anchorNode: t => Dom.element = "";
   [@bs.get] external anchorOffset: t => int = "";
   [@bs.get] external extentNode: t => Dom.element = "";

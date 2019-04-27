@@ -151,8 +151,12 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
       )
       tabIndex=(-1)
       onKeyDown={evt =>
-        if (ReactEvent.Keyboard.key(evt) == "Enter") {
-          addSelection(evt->ReactEvent.Keyboard.shiftKey);
+        switch (ReactEvent.Keyboard.key(evt)) {
+          | "Enter" => addSelection(evt->ReactEvent.Keyboard.shiftKey);
+          | "Escape" =>
+            dispatch(`Clear)
+            Web.Selection.current()->Web.Selection.removeAllRanges;
+          | _ => ()
         }
       }>
       <div
@@ -202,7 +206,7 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
              let tagColor =
                switch (tagColors) {
                | [color, ..._] => color
-               | [] => "red"
+               | [] => "#ccc"
                };
              <div
                onClick={evt => dispatch(`Select(ann.id))}
@@ -210,10 +214,10 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                className=Css.(
                  style([
                    width(px(10)),
-                   marginLeft(px(2)),
+                  //  marginLeft(px(2)),
                    cursor(`pointer),
                    hover([
-                     selector(" > div", [outline(px(1), `solid, black)]),
+                     selector(" > div > div", [outline(px(1), `solid, black)]),
                    ]),
                  ])
                )>
@@ -221,10 +225,15 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                 ->Array.mapWithIndex((i, (top, height, ref)) =>
                     <div
                       key={Js.Int.toString(i)}
+                      onClick={evt => {
+                        Web.Selection.current()->Web.Selection.fromIdOffset(ref.start, ref.stop)
+                      }}
                       className=Css.(
                         style([
-                          backgroundColor(rgba(255, 0, 0, 0.3)),
-                          width(px(10)),
+                          // backgroundColor(rgba(255, 0, 0, 0.3)),
+                          width(px(4)),
+                          borderLeft(px(3), `solid, white),
+                          borderRight(px(3), `solid, white),
                           position(`absolute),
                         ])
                       )
@@ -232,12 +241,21 @@ let make = (~meta, ~volume, ~content, ~state: Types.state, ~dispatch) => {
                         ~top=Js.Float.toString(top) ++ "px",
                         // ~marginLeft=Js.Int.toString(i * 5) ++ "px",
                         ~height=Js.Float.toString(height) ++ "px",
-                        ~backgroundColor=tagColor,
-                        ~outline=
-                          ann.id == state.current.id ? "1px solid black" : "",
+                        // ~backgroundColor=tagColor,
                         (),
                       )}
-                    />
+                    >
+                      <div
+                      style={ReactDOMRe.Style.make(
+                        ~backgroundColor=tagColor,
+                        ~height=Js.Float.toString(height) ++ "px",
+                        ~outline=
+                          ann.id == state.current.id ? "1px solid black" : "",
+                        ~width="4px",
+                        ()
+                      )}
+                      />
+                    </div>
                   )
                 ->React.array}
              </div>;
