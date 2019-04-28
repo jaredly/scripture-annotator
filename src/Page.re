@@ -42,7 +42,7 @@ let reduce = (state: Types.state, action) =>
       },
     }
   | `CreateTag(name) =>
-    let tag = Types.Tag.create(~name, ~color="#afa");
+    let tag = Types.Tag.create(~name, ~color="#afa", ~study="default");
     Database.tagsDb->Database.setItem(tag.id, tag)->ignore;
     {
       ...state,

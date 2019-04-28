@@ -1,15 +1,21 @@
 {
   "$schemaVersion": 2,
-  "version": 1,
+  "version": 2,
   "engines": {
     "Js.Json": {
-      "output": "src/TypeSerde.re"
+      "output": "src/TypeSerde.re",
+      "helpers": "SerdeHelpers"
     }
   },
   "entries": [
     {
       "file": "src/Settings.re",
       "type": "settings"
+    },
+    {
+      "file": "src/Types.re",
+      "type": "Study.t",
+      "publicName": "study"
     },
     {
       "file": "src/Types.re",

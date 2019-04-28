@@ -56,16 +56,23 @@ let getAll = (l: localforage('a), getId: 'a => string) => {
 
 let annotationDb = (
   createInstance({"name": "annotations"}),
-  TypeSerde.serializeAnnotation,
-  TypeSerde.deserializeAnnotation,
+  TypeSerde.Modules.Annotation.serialize,
+  TypeSerde.Modules.Annotation.deserialize,
 );
 let tagsDb = (
   createInstance({"name": "tags"}),
-  TypeSerde.serializeTag,
-  TypeSerde.deserializeTag,
+  TypeSerde.Modules.Tag.serialize,
+  TypeSerde.Modules.Tag.deserialize,
+);
+let studiesDb = (
+  createInstance({"name": "studies"}),
+  TypeSerde.Modules.Study.serialize,
+  TypeSerde.Modules.Study.deserialize,
 );
 
-let load = () => {
+let load = studyId => {
+  let study = Types.Study.empty;
+  // let%Lets.Async study = studyId === "default" ? Types.Study.empty : [];
   let%Lets.Async (annotations, tags) =
     Js.Promise.all2((
       annotationDb->getAll(annotation => annotation.id),
@@ -73,6 +80,7 @@ let load = () => {
     ));
   Lets.Async.resolve({
     Types.annotations,
+    study,
     tags,
     current: Types.Annotation.empty,
   });

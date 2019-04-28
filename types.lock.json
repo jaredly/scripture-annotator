@@ -437,6 +437,633 @@
           ]
         ]
       ]
+    },
+    {
+      "entries": [
+        {
+          "moduleName": "Settings",
+          "modulePath": [],
+          "engines": [
+            [
+              ["Js.Json"],
+              1
+            ]
+          ],
+          "name": "settings"
+        },
+        {
+          "moduleName": "Types",
+          "modulePath": ["Study"],
+          "engines": [
+            [
+              ["Js.Json"],
+              1
+            ]
+          ],
+          "name": "t"
+        },
+        {
+          "moduleName": "Types",
+          "modulePath": ["Annotation"],
+          "engines": [
+            [
+              ["Js.Json"],
+              1
+            ]
+          ],
+          "name": "t"
+        },
+        {
+          "moduleName": "Types",
+          "modulePath": ["Tag"],
+          "engines": [
+            [
+              ["Js.Json"],
+              1
+            ]
+          ],
+          "name": "t"
+        }
+      ],
+      "typeMap": [
+        [
+          [
+            "Belt_SetString",
+            [],
+            "t"
+          ],
+          [
+            [
+              [
+                {
+                  "txt": "ocaml.doc",
+                  "loc": {
+                    "loc_start": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_end": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_ghost": true
+                  }
+                },
+                [
+                  "PStr",
+                  "let _ = \" The type of sets. \""
+                ]
+              ]
+            ],
+            {
+              "name": "t",
+              "variables": [],
+              "body": ["Abstract"]
+            }
+          ]
+        ],
+        [
+          [
+            "Settings",
+            [],
+            "bookmark"
+          ],
+          [
+            [],
+            {
+              "name": "bookmark",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "uri",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "scroll",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "date",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "name",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Settings",
+            [],
+            "settings"
+          ],
+          [
+            [],
+            {
+              "name": "settings",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "lastUsedTags",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "list"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "string"
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "history",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "array"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Public",
+                            [
+                              "Settings",
+                              [],
+                              "bookmark"
+                            ]
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "bookmarks",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "array"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Public",
+                            [
+                              "Settings",
+                              [],
+                              "bookmark"
+                            ]
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Types",
+            [],
+            "reference"
+          ],
+          [
+            [],
+            {
+              "name": "reference",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "uri",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "start",
+                    [
+                      "Tuple",
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "string"
+                          ],
+                          []
+                        ],
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "int"
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "stop",
+                    [
+                      "Tuple",
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "string"
+                          ],
+                          []
+                        ],
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "int"
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "text",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Types",
+            ["Annotation"],
+            "t"
+          ],
+          [
+            [
+              [
+                {
+                  "txt": "migrate.study",
+                  "loc": {
+                    "loc_start": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_end": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_ghost": true
+                  }
+                },
+                [
+                  "PStr",
+                  "let _ = fun a -> \"default\""
+                ]
+              ]
+            ],
+            {
+              "name": "t",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "id",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "study",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "tags",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "list"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Builtin",
+                            "string"
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "references",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "list"
+                      ],
+                      [
+                        [
+                          "Reference",
+                          [
+                            "Public",
+                            [
+                              "Types",
+                              [],
+                              "reference"
+                            ]
+                          ],
+                          []
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "notes",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "created",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "modified",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Types",
+            ["Study"],
+            "t"
+          ],
+          [
+            [],
+            {
+              "name": "t",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "id",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "title",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "created",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "float"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "finished",
+                    [
+                      "Reference",
+                      [
+                        "Public",
+                        [
+                          "Belt_SetString",
+                          [],
+                          "t"
+                        ]
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          [
+            "Types",
+            ["Tag"],
+            "t"
+          ],
+          [
+            [
+              [
+                {
+                  "txt": "migrate.study",
+                  "loc": {
+                    "loc_start": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_end": {
+                      "pos_fname": "_none_",
+                      "pos_lnum": 1,
+                      "pos_bol": 0,
+                      "pos_cnum": -1
+                    },
+                    "loc_ghost": true
+                  }
+                },
+                [
+                  "PStr",
+                  "let _ = fun t -> \"default\""
+                ]
+              ]
+            ],
+            {
+              "name": "t",
+              "variables": [],
+              "body": [
+                "Record",
+                [
+                  [
+                    "id",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "study",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "name",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ],
+                  [
+                    "color",
+                    [
+                      "Reference",
+                      [
+                        "Builtin",
+                        "string"
+                      ],
+                      []
+                    ]
+                  ]
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
     }
   ]
 }
