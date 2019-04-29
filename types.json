@@ -1,6 +1,6 @@
 {
   "$schemaVersion": 2,
-  "version": 2,
+  "version": 3,
   "engines": {
     "Js.Json": {
       "output": "src/TypeSerde.re",

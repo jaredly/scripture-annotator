@@ -136,6 +136,7 @@ let make = (~meta, ~volume as _, ~content, ~state: Types.state, ~dispatch) => {
           @ [
             {
               uri: meta##uri,
+              translation: "en-lds",
               start,
               stop,
               text: s->Web.Selection.getRange->Web.Range.toHTML,

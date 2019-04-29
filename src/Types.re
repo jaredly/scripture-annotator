@@ -1,8 +1,10 @@
+[@migrate.translation ref => "en-lds"]
 type reference = {
   uri: string,
   start: (string, int),
   stop: (string, int),
   text: string,
+  translation: string,
 };
 
 let newId = () =>
