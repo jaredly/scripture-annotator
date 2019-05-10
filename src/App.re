@@ -82,31 +82,52 @@ module PageWrapper = {
         let%Lets.Async.Consume state = Database.load();
         dispatch(`Reset(state));
       };
-      None
+      None;
     });
 
-    React.useEffect2(() => {
-      {
-        let%Lets.Async.Consume data = Content.content(volume##item_id, content##subitem_id);
-        setData(Some(data))
-      };
-      None
-    }, (volume##item_id, content##subitem_id));
+    React.useEffect2(
+      () => {
+        {
+          let%Lets.Async.Consume data =
+            Content.content(volume##item_id, content##subitem_id);
+          setData(Some(data));
+        };
+        None;
+      },
+      (volume##item_id, content##subitem_id),
+    );
 
-    <div className=Css.(style([
-      position(`absolute),
-      top(`zero),
-      right(`zero),
-      left(`zero),
-      bottom(`zero),
-    ]))>
+    <div
+      className=Css.(
+        style([
+          position(`absolute),
+          backgroundColor(Colors.background),
+          color(Colors.text),
+          selector(
+            "textarea",
+            [backgroundColor(Colors.background), color(Colors.text)],
+          ),
+          selector(
+            "input",
+            [backgroundColor(Colors.background), color(Colors.text)],
+          ),
+          selector(
+            "button",
+            [backgroundColor(Colors.background), color(Colors.text)],
+          ),
+          top(`zero),
+          right(`zero),
+          left(`zero),
+          bottom(`zero),
+        ])
+      )>
       <TopNav nav volume content />
       // {React.string(content##title)}
-      {switch data {
-        | None => React.string("Loading...")
-        | Some(data) =>
-          <Page meta=content volume content=data state dispatch />
-      }}
+      {switch (data) {
+       | None => React.string("Loading...")
+       | Some(data) =>
+         <Page meta=content volume content=data state dispatch />
+       }}
     </div>;
   };
 };

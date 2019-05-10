@@ -49,8 +49,8 @@ let make =
                     style([
                       // backgroundColor(rgba(255, 0, 0, 0.3)),
                       width(px(4)),
-                      borderLeft(px(3), `solid, white),
-                      borderRight(px(3), `solid, white),
+                      borderLeft(px(3), `solid, Colors.background),
+                      borderRight(px(3), `solid, Colors.background),
                       position(`absolute),
                     ])
                   )

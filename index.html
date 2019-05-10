@@ -1,6 +1,6 @@
-<!doctype html>
-<meta lang="en">
-<meta charset="utf8">
+<!DOCTYPE html>
+<meta lang="en" />
+<meta charset="utf8" />
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -26,8 +26,21 @@
   p.verse {
     margin: 8px 0;
   }
+  #fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+  html {
+    filter: invert(100%);
+  }
 </style>
 <body>
   <div id="root"></div>
   <script src="./bundle/index.js"></script>
+  <div id="invert"></div>
+  <div id="fullscreen" onclick="document.documentElement.requestFullscreen()">
+    Fullscreen
+  </div>
 </body>

@@ -108,7 +108,7 @@ module Autocomplete = {
                  maxHeight(px(400)),
                  overflow(`auto),
                  maxWidth(px(300)),
-                 backgroundColor(white),
+                 backgroundColor(Colors.background),
                  boxShadow(~y=px(2), ~blur=px(5), hex("ccc")),
                ])
              )>
@@ -119,9 +119,9 @@ module Autocomplete = {
                     className=Css.(
                       style([
                         flexShrink(0),
-                        hover([backgroundColor(hex("eee"))]),
+                        hover([backgroundColor(Colors.hover)]),
                         backgroundColor(
-                          i == selected ? hex("eee") : transparent,
+                          i == selected ? Colors.hover : transparent,
                         ),
                         cursor(`pointer),
                         padding2(~v=px(8), ~h=px(16)),
@@ -146,7 +146,7 @@ module TagEditor = {
       <div
         className=Css.(
           style([
-            backgroundColor(white),
+            backgroundColor(Colors.background),
             padding(px(8)),
             borderRadius(px(4)),
           ])
