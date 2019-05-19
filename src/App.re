@@ -61,7 +61,23 @@ module Volume = {
 
 module Loading = {
   [@react.component]
-  let make = (~fn, ~loaded, ~loading=() => React.string("Loading....")) => {
+  let make =
+      (
+        ~fn,
+        ~loaded,
+        ~loading=() =>
+                   <div
+                     className=Css.(
+                       style([
+                         textAlign(`center),
+                         alignSelf(`stretch),
+                         padding(px(50)),
+                         flex(1),
+                       ])
+                     )>
+                     {React.string("Loading...")}
+                   </div>,
+      ) => {
     let value = Hooks.useLoading(fn);
     switch (value) {
     | None => loading()
@@ -124,7 +140,18 @@ module PageWrapper = {
       <TopNav nav volume content />
       // {React.string(content##title)}
       {switch (data) {
-       | None => React.string("Loading...")
+       | None =>
+         <div
+           className=Css.(
+             style([
+               textAlign(`center),
+               alignSelf(`stretch),
+               padding(px(50)),
+               flex(1),
+             ])
+           )>
+           {React.string("Loading...")}
+         </div>
        | Some(data) =>
          <Page meta=content volume content=data state dispatch />
        }}

@@ -89,16 +89,18 @@ let make =
       <button
         disabled={!annotation->Types.Annotation.isValid || !changed}
         onClick={evt => onSave()}>
-        {str("Save")}
+        {str(!changed ? "No changes" : "Save")}
       </button>
-      <button
-        disabled={!annotation->Types.Annotation.isValid || !changed}
-        onClick={evt => {
-          onSave();
-          onClear();
-        }}>
-        {str("Save & Clear")}
-      </button>
+      {changed
+         ? <button
+             disabled={!annotation->Types.Annotation.isValid || !changed}
+             onClick={evt => {
+               onSave();
+               onClear();
+             }}>
+             {str("Save & Clear")}
+           </button>
+         : React.null}
       <button onClick={evt => onClear()}> {str("Cancel")} </button>
       <button disabled={annotation.id == ""} onClick={evt => onDelete()}>
         {str("Delete")}

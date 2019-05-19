@@ -33,7 +33,10 @@ let make =
                //  marginLeft(px(2)),
                cursor(`pointer),
                hover([
-                 selector(" > div > div", [outline(px(1), `solid, black)]),
+                 selector(
+                   " > div > div",
+                   [outline(px(1), `solid, Colors.outline)],
+                 ),
                ]),
              ])
            )>
@@ -62,11 +65,14 @@ let make =
                     (),
                   )}>
                   <div
+                    className=Css.(
+                      ann.id == state.current.id
+                        ? style([outline(px(1), solid, Colors.outline)])
+                        : ""
+                    )
                     style={ReactDOMRe.Style.make(
                       ~backgroundColor=tagColor,
                       ~height=Js.Float.toString(height) ++ "px",
-                      ~outline=
-                        ann.id == state.current.id ? "1px solid black" : "",
                       ~width="4px",
                       (),
                     )}

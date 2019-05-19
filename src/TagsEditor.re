@@ -11,6 +11,7 @@ module Styles = {
     style([
       flexDirection(`row),
       padding2(~v=px(4), ~h=px(8)),
+      color(black),
       borderRadius(px(4)),
       marginRight(px(8)),
       marginBottom(px(4)),
@@ -19,6 +20,8 @@ module Styles = {
     style([
       borderStyle(`none),
       cursor(`pointer),
+      marginLeft(px(4)),
+      borderRadius(px(3)),
       backgroundColor(`transparent),
       marginRight(px(-4)),
     ]);
